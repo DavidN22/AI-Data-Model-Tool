@@ -21,19 +21,22 @@
 ### AI Data Model Creation
 Designing your data model has never been easier. Start a conversation with the AI about your data model requirements. Once you're satisfied, hit the "Generate Data Model" button, and within seconds, your model will be fully designed and perfectly laid out
 
-![dashboard-one](https://github.com/user-attachments/assets/369f8d06-1ad9-4008-9d0f-2b7f730ef8e8)
+![Data Model Creation](https://raw.githubusercontent.com/DavidN22/AI-Data-Model-Tool/3c0bf6c3075dfc2b1c1b8ee495fcacc19dc17fac/frontend/src/assets/DataModelcreation.gif)
+
 
 
 ### Updating Current model with the help of AI
 Not completely happy with the generated model? No problem! Continue the discussion with the AI to refine and enhance it. The AI leverages persistent history to incorporate your requested changes and update the design seamlessly.
 
-![dashboard-Ai](https://github.com/user-attachments/assets/adbcfff2-96e8-43e5-a6f0-4445c46ea403)
+![Datamodel Update](https://raw.githubusercontent.com/DavidN22/AI-Data-Model-Tool/3c0bf6c3075dfc2b1c1b8ee495fcacc19dc17fac/frontend/src/assets/Datamodelupdate.gif)
+
 
 
 ### Manuel Data-Model Inserts
 Prefer to take matters into your own hands? Create tables manually with ease and even integrate them into AI-generated models. Alternatively, enhance AI-generated models by adding your custom tables. The process is flexible, letting you transition between manual and AI-assisted workflows effortlessly.
 
-![Heatmap](https://github.com/user-attachments/assets/676dcb5e-fd77-4218-a228-de4fbebbbff4)
+![Manual Mode](https://raw.githubusercontent.com/DavidN22/AI-Data-Model-Tool/3c0bf6c3075dfc2b1c1b8ee495fcacc19dc17fac/frontend/src/assets/manualmode.gif)
+
 
 
 
