@@ -55,18 +55,20 @@ Prefer to take matters into your own hands? Create tables manually with ease and
     Replace repo with the URL of the project repository.
 
     ```bash
-    git clone <repo>
+    git clone https://github.com/DavidN22/AI-Data-Model-Tool.git
     ```
   
 
 
-2. Navigate to the root of the cloned repo and open in code editor (VS code) and install packages:
+2. Navigate to the cloned repo's root directory, open it in VS Code, and install the packages. You should already be in the root directory after cloning and opening.
 
     ```bash
     npm install
     ```
 
 3. Replace API key in `/backend/api-key.js` with your own OpenAI API key.
+
+   Link to OpenAi API key: https://platform.openai.com/settings/organization/api-keys
 
    If you don’t know where to get an OpenAI API key, check out this link: [OpenAI Help](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
 
@@ -77,6 +79,7 @@ Prefer to take matters into your own hands? Create tables manually with ease and
     ```bash
     npm start
     ```
+   Visit [localhost:8080](http://localhost:8000/) to see the application
 
 5. Start building!
 
