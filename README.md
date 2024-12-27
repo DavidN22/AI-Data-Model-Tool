@@ -79,7 +79,7 @@ Prefer to take matters into your own hands? Create tables manually with ease and
     ```bash
     npm start
     ```
-   Visit [localhost:8080](http://localhost:8000/) to see the application
+   Visit [localhost:8000](http://localhost:8000/) to see the application
 
 5. Start building!
 
