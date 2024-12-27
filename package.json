@@ -1,0 +1,24 @@
+{
+  "name": "Root",
+  "version": "1.0.0",
+  "description": "backend for app",
+  "main": "server.js",
+  "workspaces": [
+    "frontend", 
+    "backend" 
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm start --prefix backend\" \"npm run dev --prefix frontend\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "concurrently": "^9.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "openai": "^4.77.0"
+  }
+}
