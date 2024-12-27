@@ -12,8 +12,8 @@
 | Generate an visually build Data-model with the click of one button                                                               | ✅        |
 | Manually create SQL tables and intergrate them with AI-made SQL tables                                                                                          | ✅        |
 | Persistant History so you can update the existing model with the help of AI                                                                    | ✅        |
-| (Stretch feature) Add persistant memory for edges that were manually created and connected to other tables                                                                            | 🛠️        |
 | (Stretch feature) Create a SQL string for the data-model so users can create the shown model in an actual database                                                           | 🛠️        |
+| (Stretch feature) Enable local database storage to store and retrive saved data models                                                           | 🛠️        |
 </div> 
 
 ## Key Features
@@ -47,6 +47,8 @@ Prefer to take matters into your own hands? Create tables manually with ease and
 * Git installed on your system ([https://git-scm.com/downloads](https://git-scm.com/downloads))
 * Node.js and npm installed on your system ([https://nodejs.org/en](https://nodejs.org/en))
 * A code editor of your choice (e.g., Visual Studio Code)
+* An OpenAI API key to enable AI functionality ([https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key))
+
 
 1. To get started git clone the repository:
 
@@ -64,7 +66,10 @@ Prefer to take matters into your own hands? Create tables manually with ease and
     npm install
     ```
 
-3. Replace API key in /backend/api-key.js
+3. Replace API key in `/backend/api-key.js` with your own OpenAI API key.
+
+   If you don’t know where to get an OpenAI API key, check out this link: [OpenAI Help](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
+
 
 
 4. Run your application in the root:
