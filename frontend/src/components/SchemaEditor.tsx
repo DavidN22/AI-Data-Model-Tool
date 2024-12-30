@@ -1,25 +1,29 @@
 import { useState, useRef, useEffect } from 'react';
+import { Node } from 'reactflow';
 
 interface Column {
   id: number;
   name: string;
   type: string;
+  added: boolean;
 }
 
 interface SchemaEditorProps {
+  manualNodes: Node[];
   onSubmit: (tableName: string, schema: { name: string; type: string }[]) => void;
+  mergeDataModel: (manualNodes: Node[]) => void;
+  loading: boolean;
 }
 
-export function SchemaEditor({ onSubmit }: SchemaEditorProps) {
+export function SchemaEditor({ onSubmit, manualNodes, mergeDataModel, loading }: SchemaEditorProps) {
   const [tableName, setTableName] = useState('');
   const [columns, setColumns] = useState<Column[]>([]);
-
   const columnsContainerRef = useRef<HTMLDivElement>(null);
 
   const handleAddColumn = () => {
     setColumns((prevColumns) => [
       ...prevColumns,
-      { id: Date.now(), name: '', type: 'UUID' },
+      { id: Date.now(), name: '', type: 'UUID', added: true },
     ]);
   };
 
@@ -45,6 +49,10 @@ export function SchemaEditor({ onSubmit }: SchemaEditorProps) {
     onSubmit(tableName, schema);
     setTableName('');
     setColumns([]);
+  };
+
+  const handleMergeWithAI = () => {
+    mergeDataModel(manualNodes);
   };
 
   useEffect(() => {
@@ -73,7 +81,15 @@ export function SchemaEditor({ onSubmit }: SchemaEditorProps) {
         className="space-y-4 flex-grow overflow-y-auto border border-gray-200 p-2 rounded"
         ref={columnsContainerRef}
       >
-        <h3 className="font-medium text-gray-700">Columns:</h3>
+        <h3 className="font-medium text-gray-700 flex items-center justify-between">
+          Columns
+          <button
+            onClick={handleAddColumn}
+            className="text-lg font-bold text-white bg-green-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-green-600 focus:ring-2 focus:ring-green-500"
+          >
+            +
+          </button>
+        </h3>
         {columns.map((column) => (
           <div
             key={column.id}
@@ -96,7 +112,6 @@ export function SchemaEditor({ onSubmit }: SchemaEditorProps) {
               className="w-1/3 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               style={{ minWidth: '130px' }}
             >
-              
               <option value="UUID">UUID</option>
               <option value="VARCHAR">VARCHAR</option>
               <option value="INTEGER">INTEGER</option>
@@ -114,21 +129,26 @@ export function SchemaEditor({ onSubmit }: SchemaEditorProps) {
           </div>
         ))}
       </div>
+      <button
+  onClick={handleSubmit}
+  className={`w-full px-4 py-2 text-white rounded focus:outline-none focus:ring-2 ${
+    loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500'
+  }`}
+  disabled={loading}
+>
+  {'Submit '}
+</button>
 
-      <div className="flex space-x-4">
-        <button
-          onClick={handleAddColumn}
-          className="px-6 py-2 text-white bg-green-500 rounded hover:bg-green-600 focus:ring-2 focus:ring-green-500"
-        >
-          Add Column
-        </button>
-        <button
-          onClick={handleSubmit}
-          className="px-6 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
-        >
-          Submit
-        </button>
-      </div>
+<button
+  onClick={handleMergeWithAI}
+  className={`w-full px-4 py-2 text-white rounded focus:outline-none focus:ring-2 ${
+    loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-500 hover:bg-purple-600 focus:ring-purple-500'
+  }`}
+  disabled={loading}
+>
+  {loading ? 'Merging...' : 'Merge with current AI model'}
+</button>
+
     </div>
   );
 }

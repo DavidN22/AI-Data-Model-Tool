@@ -13,6 +13,7 @@ export function AIDataModelVisualizer() {
     resetNodesAndEdges,
     setLoading,
     setManualNodes,
+    mergeDataModel,
   } = useDataModelServices();
 
   return (
@@ -22,6 +23,7 @@ export function AIDataModelVisualizer() {
         <div className="w-1/3 max-w-md">
           <Chat
             generateDataModel={generateDataModel}
+            mergeDataModel={mergeDataModel}
             loading={loading}
             setLoading={setLoading}
             resetNodesAndEdges={resetNodesAndEdges}

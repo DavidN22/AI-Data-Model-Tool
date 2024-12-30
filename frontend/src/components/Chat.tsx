@@ -6,6 +6,7 @@ import { useDataModelServices } from './Services/Services';
 
 interface ChatProps {
   generateDataModel: () => void;
+  mergeDataModel: (arg:Node[]) => void;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   resetNodesAndEdges: () => void;
@@ -19,7 +20,7 @@ interface Message {
   role: 'user' | 'assistant';
 }
 
-export function Chat({ generateDataModel, loading, resetNodesAndEdges, schemaAddNodes, manualNodes }: ChatProps) {
+export function Chat({ generateDataModel, mergeDataModel, loading, resetNodesAndEdges, schemaAddNodes, manualNodes }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
@@ -64,10 +65,6 @@ export function Chat({ generateDataModel, loading, resetNodesAndEdges, schemaAdd
   };
 
   const handleClear = async () => {
-    if (showSchemaEditor) {
-      resetNodesAndEdges();
-
-    } else {
       try {
         resetNodesAndEdges();
         const response = await fetch('/api/ai/clear', {
@@ -83,7 +80,6 @@ export function Chat({ generateDataModel, loading, resetNodesAndEdges, schemaAdd
       } catch (error) {
         console.error('Error clearing chat history:', error);
       }
-    }
   };
   return (
     <div className="flex flex-col h-full border border-gray-200 rounded-lg bg-white shadow-sm overflow-hidden">
@@ -103,7 +99,7 @@ export function Chat({ generateDataModel, loading, resetNodesAndEdges, schemaAdd
             onClick={handleClear}
             className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600 focus:ring-2 focus:ring-red-500"
           >
-            {showSchemaEditor ? 'Reset Tables' : 'Clear Text'}
+            {showSchemaEditor ? 'Clear All' : 'Clear All'}
           </button>
         </div>
       </div>
@@ -111,7 +107,7 @@ export function Chat({ generateDataModel, loading, resetNodesAndEdges, schemaAdd
       {/* Main Content */}
       <div className="flex-grow overflow-y-auto p-4 space-y-4" style={{ height: '400px', overflowY: 'auto' }}>
         {showSchemaEditor ? (
-          <SchemaEditor onSubmit={schemaAddNodes}  />
+          <SchemaEditor onSubmit={schemaAddNodes} manualNodes={manualNodes} mergeDataModel = {mergeDataModel} loading ={loading}  />
         ) : (
           <>
             {/* Chat Messages */}
@@ -204,6 +200,7 @@ export function Chat({ generateDataModel, loading, resetNodesAndEdges, schemaAdd
           Generate Data Model
         </button>
       </div>
+      
       )}
     </div>
   );

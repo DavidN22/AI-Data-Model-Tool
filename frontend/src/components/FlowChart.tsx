@@ -66,7 +66,6 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 };
 
 export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartProps) {
-  
   const [localNodes, setNodes, onNodesChange] = useNodesState(nodes);
   const [localEdges, setEdges, onEdgesChange] = useEdgesState(edges);
   const [newEdge, setNewEdge] = useState<Connection | null>(null);
@@ -77,7 +76,9 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [selectedElement, setSelectedElement] = useState<null | { id: string; type: 'node' | 'edge' }>(null);
 
-  
+  // SQL Modal State
+
+
   const onConnect = useCallback((params: Connection) => {
     setNewEdge(params);
     setIsModalOpen(true);
@@ -97,13 +98,13 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
     setEdgeLabel('');
     setIsModalOpen(false);
   };
- 
+
   const handleNodeContextMenu = (event: React.MouseEvent, node: Node) => {
     event.preventDefault();
     setSelectedElement({ id: node.id, type: 'node' });
     setMenuAnchor(event.currentTarget as HTMLElement);
   };
-  
+
   const handleEdgeContextMenu = (event: React.MouseEvent, edge: Edge) => {
     event.preventDefault();
     setSelectedElement({ id: edge.id, type: 'edge' });
@@ -125,13 +126,12 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
     setMenuAnchor(null);
     setSelectedElement(null);
   };
-  
-
 
   const handleMenuClose = () => {
     setMenuAnchor(null);
     setSelectedElement(null);
   };
+
 
   useEffect(() => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(

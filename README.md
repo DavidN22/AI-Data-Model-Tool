@@ -12,7 +12,7 @@
 | Generate an visually build Data-model with the click of one button                                                               | ✅        |
 | Manually create SQL tables and intergrate them with AI-made SQL tables                                                                                          | ✅        |
 | Persistant History so you can update the existing model with the help of AI                                                                    | ✅        |
-| (Stretch feature) Create a SQL string for the data-model so users can create the shown model in an actual database                                                           | 🛠️        |
+| (Stretch feature) Create a SQL string for the data-model so users can create the shown model in an actual database                                                           | ✅        |
 | (Stretch feature) Enable local database storage to store and retrive saved data models                                                           | 🛠️        |
 </div> 
 
@@ -37,6 +37,11 @@ Prefer to take matters into your own hands? Create tables manually with ease and
 
 ![Manual Mode](https://raw.githubusercontent.com/DavidN22/AI-Data-Model-Tool/3c0bf6c3075dfc2b1c1b8ee495fcacc19dc17fac/frontend/src/assets/manualmode.gif)
 
+
+### Mege Manuel tables with AI + SQL string extraction
+Easily design your own custom tables and integrate them with existing AI-generated models to build a comprehensive data structure. Once your tables are ready, extract the precise SQL string for any table by pressing the "SQL" button on the desired table.
+
+![Manual Mode](https://raw.githubusercontent.com/DavidN22/AI-Data-Model-Tool/3c0bf6c3075dfc2b1c1b8ee495fcacc19dc17fac/frontend/src/assets/manualmode.gif)
 
 
 

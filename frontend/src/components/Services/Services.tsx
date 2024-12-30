@@ -12,7 +12,10 @@ import { initialNodes, initialEdges } from './InitialNodes';
     const [aiNodes, setAiNodes] = useState<Node[]>([]); 
    useEffect(() => {
 }, [manualNodes]);
+
+
     const handleAddNode = (tableName: string, schema: { name: string; type: string }[]) => {
+  
       const newNode: Node = {
         id: tableName.toLowerCase().replace(/\s+/g, '_'),
         type: 'custom',
@@ -25,17 +28,51 @@ import { initialNodes, initialEdges } from './InitialNodes';
           y: Math.random() * 400,
         },
       };
-  
-    
       setManualNodes((prevManualNodes) => {
         const updatedManualNodes = [...prevManualNodes, newNode];
         setNodes([...aiNodes, ...updatedManualNodes]); // Merge AI and manual nodes
         return updatedManualNodes;
-      });
-    
+      });;
       setIsFirstAdd(false);
     };
-  
+  const mergeDataModel = async () => {
+    setLoading(true);
+    try {
+      const message = `${JSON.stringify(manualNodes)}`
+
+    const response = await fetch('/api/ai/merge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message }),
+    });
+
+      if (response.ok) {
+        const data = await response.json();
+        const mergedNodes = data.nodes.map((node: Node) => ({
+          ...node,
+          type: 'custom',
+        }));
+        const mergedEdges = data.edges;
+        setAiNodes(mergedNodes);
+        setManualNodes([]);
+        setNodes(mergedNodes);
+        setEdges(mergedEdges);
+        setIsFirstAdd(false);
+
+      } else {
+        console.error('Failed to merge data model');
+        throw new Error('Failed to merge data model');
+      }
+    } catch (error) {
+      console.error('Error during data model merge:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+
+
+
+  }
     const generateDataModel = async () => {
       setLoading(true);
       try {
@@ -73,7 +110,6 @@ import { initialNodes, initialEdges } from './InitialNodes';
       setNodes([]);
       setEdges([]);
       setManualNodes([]);
-      setAiNodes([]);
       setIsFirstAdd(true);
     };
     const fetchAIResponse = async (input: string, manualNodes: Node[]) => {
@@ -109,7 +145,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
         throw error;
       }
     };
-  
+   
     return {
       nodes,
       edges,
@@ -117,6 +153,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
       isFirstAdd,
       manualNodes,
       handleAddNode,
+      mergeDataModel,
       generateDataModel,
       fetchAIResponse,
       resetNodesAndEdges,
@@ -124,4 +161,4 @@ import { initialNodes, initialEdges } from './InitialNodes';
       setManualNodes,
     };
   };
-  
+ 
