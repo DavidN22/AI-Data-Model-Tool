@@ -41,7 +41,7 @@ Prefer to take matters into your own hands? Create tables manually with ease and
 ### Mege Manuel tables with AI + SQL string extraction
 Easily design your own custom tables and integrate them with existing AI-generated models to build a comprehensive data structure. Once your tables are ready, extract the precise SQL string for any table by pressing the "SQL" button on the desired table.
 
-![Manual Mode](https://raw.githubusercontent.com/DavidN22/AI-Data-Model-Tool/3c0bf6c3075dfc2b1c1b8ee495fcacc19dc17fac/frontend/src/assets/manualmode.gif)
+![Manual Mode](https://raw.githubusercontent.com/DavidN22/AI-Data-Model-Tool/4a23fc1e45a04f2c571f263b9d8627750ab06e59/frontend/src/assets/SQLstring.gif)
 
 
 
