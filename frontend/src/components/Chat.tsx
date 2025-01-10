@@ -67,7 +67,7 @@ export function Chat({ generateDataModel, mergeDataModel, loading, resetNodesAnd
   const handleClear = async () => {
       try {
         resetNodesAndEdges();
-        const response = await fetch('/api/googleAi/clear', {
+        const response = await fetch('https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi/clear', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
         });
