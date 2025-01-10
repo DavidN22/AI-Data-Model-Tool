@@ -125,7 +125,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message }),
         });
-    
+     
         if (!response.ok) {
           throw new Error('Failed to fetch AI response');
         } 
