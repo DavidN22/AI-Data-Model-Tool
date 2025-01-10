@@ -14,7 +14,6 @@ import dagre from 'dagre';
 import CustomNode from './CustomNode';
 import { CircularProgress, Box, TextField, Button, Modal, Menu, MenuItem } from '@mui/material';
 
-
 const nodeTypes = {
   custom: CustomNode,
 };
@@ -23,8 +22,8 @@ interface FlowChartProps {
   nodes: Node[];
   edges: Edge[];
   loading: boolean;
-  manualNodes: Node[]; // Add manualNodes
-  setManualNodes: React.Dispatch<React.SetStateAction<Node[]>>; // Add setManualNodes
+  manualNodes: Node[];
+  setManualNodes: React.Dispatch<React.SetStateAction<Node[]>>;
 }
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
@@ -56,28 +55,19 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
     return node;
   });
 
-  const layoutedEdges = edges.map((edge) => ({
-    ...edge,
-    labelBgPadding: [8, 4],
-    labelBgBorderRadius: 4,
-  })) as Edge[];
-
-  return { nodes: layoutedNodes, edges: layoutedEdges };
+  return { nodes: layoutedNodes, edges };
 };
 
 export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartProps) {
-  const [localNodes, setNodes, onNodesChange] = useNodesState(nodes);
-  const [localEdges, setEdges, onEdgesChange] = useEdgesState(edges);
+  const [localNodes, setNodes, onNodesChange] = useNodesState([]);
+  const [localEdges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [isLayoutReady, setIsLayoutReady] = useState(false); // State to track layout readiness
   const [newEdge, setNewEdge] = useState<Connection | null>(null);
   const [edgeLabel, setEdgeLabel] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Context menu state
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [selectedElement, setSelectedElement] = useState<null | { id: string; type: 'node' | 'edge' }>(null);
-
-  // SQL Modal State
-
 
   const onConnect = useCallback((params: Connection) => {
     setNewEdge(params);
@@ -132,7 +122,6 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
     setSelectedElement(null);
   };
 
-
   useEffect(() => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
       nodes,
@@ -140,6 +129,7 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
     );
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
+    setIsLayoutReady(true); // Mark layout as ready
   }, [nodes, edges, setNodes, setEdges]);
 
   return (
@@ -171,20 +161,23 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
           <CircularProgress />
         </Box>
       )}
-      <ReactFlow
-        nodes={localNodes}
-        edges={localEdges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodeContextMenu={handleNodeContextMenu}
-        onEdgeContextMenu={handleEdgeContextMenu}
-        fitView
-        nodeTypes={nodeTypes}
-      >
-        <Background color="#aaa" gap={16} />
-        <Controls />
-      </ReactFlow>
+
+      {isLayoutReady && ( // Render ReactFlow only when the layout is ready
+        <ReactFlow
+          nodes={localNodes}
+          edges={localEdges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeContextMenu={handleNodeContextMenu}
+          onEdgeContextMenu={handleEdgeContextMenu}
+          fitView
+          nodeTypes={nodeTypes}
+        >
+          <Background color="#aaa" gap={16} />
+          <Controls />
+        </ReactFlow>
+      )}
 
       <Menu
         anchorEl={menuAnchor}
