@@ -153,7 +153,7 @@ export function Chat({ generateDataModel, mergeDataModel, loading, resetNodesAnd
                   e.currentTarget.style.height = 'auto';
                 }
               }}
-              placeholder="Type your message..."
+              placeholder="Create a simple to-do list data model"
               className="flex-grow px-4 py-2 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={1}
               disabled={chatLoading || loading}
