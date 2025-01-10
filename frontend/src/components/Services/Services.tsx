@@ -68,7 +68,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
       throw error;
     } finally {
       setLoading(false);
-    }
+    } 
 
 
 
@@ -120,7 +120,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
           ? `${input} this is a new node/nodes that were manually added ${JSON.stringify(manualNodes)}`
           : input;
     
-        const response = await fetch('https://ai-data-model-tool-frontend.vercel.app/api/googleAi', {
+        const response = await fetch('/api/googleAi', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message }),

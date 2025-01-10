@@ -7,11 +7,7 @@ export default defineConfig({
   server: {
     port: 8000,
     proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        // Remove rewrite if your backend expects /api as the prefix
-      },
+      '/api': 'https://ai-data-model-tool-backend-davidn22s-projects.vercel.app',
     },
   },
 });
