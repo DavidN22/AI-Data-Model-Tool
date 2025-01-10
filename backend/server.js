@@ -5,7 +5,8 @@ const port = 3000;
 import aiRoute from './routes/aiRoute.js';
 import googleAiRoute from './routes/googleAiRoute.js';
 import bodyParser from 'body-parser';
-
+const cors = require('cors');
+app.use(cors());
 
 app.use(bodyParser.json());
 app.get('/', (req, res) => {
