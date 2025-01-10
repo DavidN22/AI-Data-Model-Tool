@@ -40,7 +40,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
     try {
       const message = `${JSON.stringify(manualNodes)}`
 
-    const response = await fetch('/api/ai/merge', {
+    const response = await fetch('/api/googleAi/merge', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message }),
@@ -76,7 +76,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
     const generateDataModel = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/api/ai/test', {
+        const response = await fetch('/api/googleAi/googleGenerate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
         });
@@ -120,7 +120,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
           ? `${input} this is a new node/nodes that were manually added ${JSON.stringify(manualNodes)}`
           : input;
     
-        const response = await fetch('/api/ai', {
+        const response = await fetch('/api/googleAi', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message }),
