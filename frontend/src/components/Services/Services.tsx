@@ -35,7 +35,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
       });;
       setIsFirstAdd(false);
     };
-  const mergeDataModel = async () => {
+  const mergeDataModel = async () => { 
     setLoading(true);
     try {
       const message = `${JSON.stringify(manualNodes)}`
