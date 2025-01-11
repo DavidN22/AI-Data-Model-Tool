@@ -66,30 +66,49 @@ export function Chat({ generateDataModel, mergeDataModel, loading, resetNodesAnd
   };
 
   const handleClear = async () => {
-      try {
-        resetNodesAndEdges();
-        const response = await fetch('/api/ai/clear', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        });
-
-        if (response.ok) {
-          setMessages([]);
-        } else {
-          console.error('Failed to clear chat history');
-        }
-      } catch (error) {
-        console.error('Error clearing chat history:', error);
+    try {
+      resetNodesAndEdges();
+      const responseAI = await fetch('/api/ai/clear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+  
+      if (!responseAI.ok) {
+        console.error('Failed to clear chat history for /api/ai/clear');
       }
+      const responseGoogleAI = await fetch('/api/googleAi/clear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+  
+      if (!responseGoogleAI.ok) {
+        console.error('Failed to clear chat history for /api/googleAi/clear');
+      }
+      if (responseAI.ok && responseGoogleAI.ok) {
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error('Error clearing chat history:', error);
+    }
   };
   return (
     <div className="flex flex-col h-full border border-gray-200 rounded-lg bg-white shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
         <h2 className="text-lg font-semibold text-gray-700">
-          {showSchemaEditor ? 'Schema Editor' : 'AI Chat'}
+          {showSchemaEditor ? 'Editor' : 'AI Chat'}
         </h2>
         <div className="flex space-x-2">
+    
+          <select
+            value={selectedService}
+            onChange={(e) => setSelectedService(e.target.value)}
+            className="px-4 py-2 text-sm text-gray-800 bg-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="Gemini">Gemini</option>
+            <option value="OpenAI">OpenAI</option>
+            
+          </select>
           
           <button
             onClick={() => setShowSchemaEditor(!showSchemaEditor)}

@@ -8,8 +8,8 @@ interface GlobalContextProps {
 const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
 
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
-  const [selectedService, setSelectedService] = useState<string>('OpenAI');
-
+  const [selectedService, setSelectedService] = useState<string>('Gemini');
+console.log(selectedService);
   return (
     <GlobalContext.Provider value={{ selectedService, setSelectedService }}>
       {children}

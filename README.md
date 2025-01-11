@@ -45,16 +45,42 @@ Easily design your own custom tables and integrate them with existing AI-generat
 
 
 
-## Getting Started
+## **Prerequisites**
 
-**Prerequisites:**
+Before setting up this project, ensure you have the following:
 
-* Git installed on your system ([https://git-scm.com/downloads](https://git-scm.com/downloads))
-* Node.js and npm installed on your system ([https://nodejs.org/en](https://nodejs.org/en))
-* A code editor of your choice (e.g., Visual Studio Code)
-* An OpenAI API key to enable AI functionality ([https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key))
+1. **Git**
+   - Required to clone the repository and manage version control.
+   - [Download Git](https://git-scm.com/downloads)
+
+2. **Node.js and npm**
+   - Required to run the application and manage dependencies.
+   - [Download Node.js](https://nodejs.org/en)
+
+3. **A Code Editor**
+   - Use your preferred code editor to edit and run the project. Recommended:
+     - [Visual Studio Code](https://code.visualstudio.com/)
+
+4. **API Keys** (OpenAI and/or Gemini)
+   - **OpenAI API Key** (optional):
+     - Required to enable AI functionality using OpenAI's GPT models.
+     - [How to get your OpenAI API Key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
+   - **Gemini API Key (Google Generative AI)** (optional):
+     - Required to enable AI functionality using Gemini's free API (15 calls per minute).
+     - [Get your Gemini API Key](https://ai.google.dev/gemini-api/docs/api-key)
 
 
+
+## How to Verify the Setup
+
+- **Git**: Run `git --version` in your terminal to ensure Git is installed.
+- **Node.js**: Run `node --version` and `npm --version` to verify the installation.
+
+With these prerequisites in place, you're ready to proceed with the project setup! 🚀
+
+
+
+## Installation
 1. To get started git clone the repository:
 
     Replace repo with the URL of the project repository.
@@ -71,11 +97,31 @@ Easily design your own custom tables and integrate them with existing AI-generat
     npm install
     ```
 
-3. Replace API key in `/backend/api-key.js` with your own OpenAI API key.
+3. Replace the API keys in `/backend/api-key.js` with your own OpenAI API key and/or Google Gemini API key.
 
-   Link to OpenAi API key: https://platform.openai.com/settings/organization/api-keys
+   - **Google Gemini API Key (Free Tier)**:
+     - Google Gemini offers **a completely free tier** with 15 calls per minute.
+     - To get your key:
+       1. Visit [Google Gemini API Key](https://ai.google.dev/gemini-api/docs/api-key).
+       2. Click **"Get a Gemini API key in Google AI Studio"**.
+       3. Then, select **"Create API key"**.
+       4. Copy the key and replace it in the `GeminiKey` variable in `/backend/api-key.js`.
 
-   If you don’t know where to get an OpenAI API key, check out this link: [OpenAI Help](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
+   - **OpenAI API Key**:
+     - To use OpenAI's GPT models, you'll need an OpenAI API key.
+     - Visit [OpenAI API Key Settings](https://platform.openai.com/settings/organization/api-keys) to generate your key.
+     - Replace the key in the `OpenAiKey` variable in `/backend/api-key.js`.
+
+   - **Help for OpenAI Key**:
+     - If you're unsure where to get your OpenAI API key, check out this guide: [OpenAI Help](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key).
+
+---
+
+**Note**: You can use either the OpenAI API key, the Google Gemini API key, or both, depending on your preferences. If you're starting, the **Google Gemini API key** is a great option due to its free tier!
+
+---
+
+
 
 
 
@@ -84,7 +130,7 @@ Easily design your own custom tables and integrate them with existing AI-generat
     ```bash
     npm start
     ```
-   Visit [localhost:8000](http://localhost:8000/) to see the application
+   Visit [localhost:8000](http://localhost:8000/) to see the application and select the dropdown on which AI model you want to use!
 
 5. Start building!
 
