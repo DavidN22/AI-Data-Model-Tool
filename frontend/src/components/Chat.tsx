@@ -255,62 +255,59 @@ export function Chat({
 
       {/* How to Use Modal */}
       {showHowToUse && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-lg font-bold mb-4">How to Use</h2>
-            <ol className="list-decimal list-inside">
-              <li>
-                Talk with the AI and discuss the type of project and{" "}
-                <strong>SQL model</strong> you would like.
-              </li>
-
-              <li>
-                The AI will then respond in <strong>text format</strong> of the{" "}
-                <strong>SQL design</strong>.
-              </li>
-
-              <li>
-                If you are happy with the current design model that the AI
-                generated, press the <strong>Generate Data Model</strong> button
-                and your <strong>SQL model</strong> should appear.
-              </li>
-
-              <li>
-                More advanced features like the <strong>Switch to Input</strong>{" "}
-                allow you to create your own tables and <strong>merge</strong>{" "}
-                them with an already active AI model.
-              </li>
-
-              <li>
-                Also pressing the <strong>SQL</strong> button on the top right
-                of a table will show the SQL string of the table.
-              </li>
-            </ol>
-
-            <p className="mt-4">
-              If you want to have full control over the project, visit this{" "}
-              <a
-                href="https://github.com/DavidN22/AI-Data-Model-Tool"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 underline hover:text-blue-700"
-              >
-                GitHub link
-              </a>{" "}
-              clone the repo and follow the readME on how to get started Happy
-              building!
-            </p>
-
-            <div className="flex justify-end space-x-2 mt-4">
-              <button
-                onClick={() => setShowHowToUse(false)}
-                className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:ring-2 focus:ring-red-500"
-              >
-                Close
-              </button>
-            </div>
-          </div>
+      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded-lg shadow-xl max-w-lg w-full">
+        <h2 className="text-2xl font-extrabold text-gray-800 mb-6 text-center">
+          How to Use
+        </h2>
+        <ol className="list-decimal list-inside space-y-4 text-gray-700">
+          <li>
+            Talk with the AI and discuss the type of project and{" "}
+            <strong>SQL model</strong> you would like.
+          </li>
+          <li>
+            The AI will then respond in <strong>text format</strong> of the{" "}
+            <strong>SQL design</strong>.
+          </li>
+          <li>
+            If you are happy with the current design model that the AI generated, 
+            press the <strong>Generate Data Model</strong> button, and your 
+            <strong>SQL model</strong> should appear.
+          </li>
+          <li>
+            More advanced features like the <strong>Switch to Input</strong> allow 
+            you to create your own tables and <strong>merge</strong> them with an 
+            already active AI model.
+          </li>
+          <li>
+            Pressing the <strong>SQL</strong> button on the top right of a table 
+            will show the SQL string of the table.
+          </li>
+        </ol>
+    
+        <p className="mt-6 text-gray-600 text-sm">
+          If you want to have full control over the project, visit this{" "}
+          <a
+            href="https://github.com/DavidN22/AI-Data-Model-Tool"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 font-medium underline hover:text-blue-800"
+          >
+            GitHub link
+          </a>, clone the repo, and follow the readME on how to get started. Happy building!
+        </p>
+    
+        <div className="flex justify-end mt-8">
+          <button
+            onClick={() => setShowHowToUse(false)}
+            className="px-5 py-2 text-white bg-gradient-to-r from-red-500 to-red-600 rounded-lg shadow hover:from-red-600 hover:to-red-700 focus:ring-4 focus:ring-red-300"
+          >
+            Close
+          </button>
         </div>
+      </div>
+    </div>
+    
       )}
     </div>
   );
