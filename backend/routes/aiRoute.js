@@ -70,7 +70,7 @@ router.post('/clear', (req, res) => {
   res.json({ message: 'Chat history cleared' });
 });
 
-router.post('/test', async (req, res) => {
+router.post('/generateModel', async (req, res) => {
   try {
     const prompt = `
       The user pressed the Generate data model button. Generate a JSON object representing nodes and edges for a data model Only respond is JSON format and nothing else. 

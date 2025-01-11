@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { SchemaEditor } from './SchemaEditor';
 import { Node } from 'reactflow';
 import { useDataModelServices } from './Services/Services';
-
+import { useGlobalContext } from './Services/GlobalProvider';
 
 interface ChatProps {
   generateDataModel: () => void;
@@ -21,6 +21,7 @@ interface Message {
 }
 
 export function Chat({ generateDataModel, mergeDataModel, loading, resetNodesAndEdges, schemaAddNodes, manualNodes }: ChatProps) {
+  const { selectedService, setSelectedService } = useGlobalContext();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
@@ -89,6 +90,7 @@ export function Chat({ generateDataModel, mergeDataModel, loading, resetNodesAnd
           {showSchemaEditor ? 'Schema Editor' : 'AI Chat'}
         </h2>
         <div className="flex space-x-2">
+          
           <button
             onClick={() => setShowSchemaEditor(!showSchemaEditor)}
             className="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"

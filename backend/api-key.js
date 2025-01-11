@@ -1,1 +1,0 @@
-export const apiKey = 'YOUR_API_KEY IN STRING FORMAT';

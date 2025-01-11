@@ -4,6 +4,7 @@ const app = express();
 const port = 3000;
 import aiRoute from './routes/aiRoute.js';
 import bodyParser from 'body-parser';
+import googleAiRoute from './routes/googleAiRoute.js';
 
 app.use(bodyParser.json());
 app.get('/', (req, res) => {
@@ -12,6 +13,7 @@ app.get('/', (req, res) => {
 );
 // all routes
 app.use('/api/ai', aiRoute);
+app.use('/api/googleAi', googleAiRoute);
 
  //no route found
 app.use((req, res, next) => {

@@ -76,7 +76,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
     const generateDataModel = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/api/ai/test', {
+        const response = await fetch('/api/ai/generateModel', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
         });
