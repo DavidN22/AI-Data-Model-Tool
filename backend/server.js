@@ -7,7 +7,10 @@ import googleAiRoute from './routes/googleAiRoute.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://ai-data-model-tool.vercel.app',
+    credentials: true,
+  }))
 
 app.use(bodyParser.json());
 app.get('/', (req, res) => {

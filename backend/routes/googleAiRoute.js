@@ -44,7 +44,13 @@ router.use((req, res, next) => {
 
   if (!sessionId) {
     sessionId = randomBytes(16).toString('hex');
-    res.cookie('sessionId', sessionId, { httpOnly: true, secure: true, maxAge:  20 * 60 * 1000 });
+    res.cookie('sessionId', sessionId, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      domain: '.vercel.app',
+      maxAge: 20 * 60 * 1000, 
+    });
     chatHistories[sessionId] = [];
   }
 
