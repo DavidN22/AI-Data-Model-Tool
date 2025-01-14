@@ -44,6 +44,7 @@ router.use((req, res, next) => {
     res.cookie('sessionId', sessionId, {
       httpOnly: true,
       secure: true,
+      path:"/",
       sameSite: 'none',
       maxAge: 20 * 60 * 1000, 
     });
