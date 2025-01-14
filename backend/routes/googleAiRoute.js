@@ -45,6 +45,7 @@ router.use((req, res, next) => {
       httpOnly: true,
       secure: true,
       path:"/",
+      domain: "ai-data-model-tool.vercel.app",
       sameSite: 'none',
       maxAge: 20 * 60 * 1000, 
     });
