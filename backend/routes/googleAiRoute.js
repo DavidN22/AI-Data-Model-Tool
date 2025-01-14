@@ -45,7 +45,6 @@ router.use((req, res, next) => {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: 'ai-data-model-tool.vercel.app',
       maxAge: 20 * 60 * 1000, 
     });
     chatHistories[sessionId] = [];
