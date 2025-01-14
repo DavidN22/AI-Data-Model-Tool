@@ -11,7 +11,7 @@ import cookieParser from 'cookie-parser';
 app.use(cors({
     origin: true,
     credentials: true,
-  }))
+  })) 
 
 app.use(bodyParser.json());
 app.use(cookieParser());
