@@ -7,8 +7,12 @@ import googleAiRoute from './routes/googleAiRoute.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-
-app.use(cors());
+app.use(
+    cors({
+      origin: 'https://ai-data-model-tool.vercel.app', // Explicitly specify your frontend domain
+      credentials: true, // Allow credentials (cookies)
+    })
+  );
 
 app.use(bodyParser.json());
 app.use(cookieParser());
