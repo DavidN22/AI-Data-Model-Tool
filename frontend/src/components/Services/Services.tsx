@@ -120,11 +120,12 @@ import { initialNodes, initialEdges } from './InitialNodes';
           ? `${input} this is a new node/nodes that were manually added ${JSON.stringify(manualNodes)}`
           : input;
     
-        const response = await fetch('https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message }),
-        });
+          const response = await fetch('https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message }),
+            credentials: 'include', // Include credentials (cookies) in the request
+          });
      
         if (!response.ok) {
           throw new Error('Failed to fetch AI response');
