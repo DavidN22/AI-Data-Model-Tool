@@ -8,10 +8,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
-app.use(cors({
-    origin: 'https://ai-data-model-tool.vercel.app',
-    credentials: true,
-  }))
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(cookieParser());
