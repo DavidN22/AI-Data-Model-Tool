@@ -6,6 +6,7 @@ import aiRoute from './routes/aiRoute.js';
 import googleAiRoute from './routes/googleAiRoute.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 app.use(cors({
     origin: 'https://ai-data-model-tool.vercel.app',
@@ -13,6 +14,7 @@ app.use(cors({
   }))
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.get('/', (req, res) => {
     res.send({data:'Hello World!'});
     }

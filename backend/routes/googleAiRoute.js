@@ -1,5 +1,4 @@
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { apiKey } from '../api-key.js';
 import { randomBytes } from 'crypto';
@@ -27,8 +26,6 @@ NEVER respond in JSON format unless the message explicitly starts with "The user
 
 const chatHistories = {};
 const MAX_CHAT_HISTORY_LENGTH = 10;
-
-router.use(cookieParser());
 
 setInterval(() => {
   Object.keys(chatHistories).forEach((sessionId) => {
