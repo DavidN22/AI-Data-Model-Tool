@@ -8,6 +8,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(cookieParser());
