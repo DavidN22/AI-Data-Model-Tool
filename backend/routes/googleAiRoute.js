@@ -103,7 +103,11 @@ router.post('/clear', (req, res) => {
   const sessionId = req.sessionId;
 
   delete chatHistories[sessionId];
-  res.clearCookie('sessionId');
+  res.clearCookie('sessionId', {
+    path: '/', // Match the path
+    secure: true, // Match the secure flag
+    sameSite: 'None', // Match the sameSite attribute
+  });
   res.json({ message: 'Chat history cleared' });
 });
 
