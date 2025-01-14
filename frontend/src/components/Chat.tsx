@@ -91,6 +91,7 @@ export function Chat({
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: 'include',
         }
       );
 

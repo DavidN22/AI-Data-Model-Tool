@@ -44,9 +44,9 @@ router.use((req, res, next) => {
     res.cookie('sessionId', sessionId, {
     
       maxAge: 20 * 60 * 1000, 
-      httpOnly: false, // Allow client-side access
-      secure: true, // Only send over HTTPS
-      sameSite: 'None', // Required for cross-origin cookies
+      httpOnly: true,
+      secure: true, 
+      sameSite: 'none',
     });
     chatHistories[sessionId] = [];
   }

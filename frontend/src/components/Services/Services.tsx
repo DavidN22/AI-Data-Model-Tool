@@ -44,6 +44,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message }),
+      credentials: 'include',
     });
 
       if (response.ok) {
@@ -79,6 +80,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
         const response = await fetch('https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi/googleGenerate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
         });
     
         if (response.ok) {
@@ -124,7 +126,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message }),
-            credentials: 'include', // Include credentials (cookies) in the request
+            credentials: 'include',
           });
      
         if (!response.ok) {
