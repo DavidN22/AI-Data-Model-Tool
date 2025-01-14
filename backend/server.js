@@ -9,13 +9,12 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 app.use(cors({
-    origin: true,
+    origin: 'https://ai-data-model-tool.vercel.app',
     credentials: true,
-  })) 
+  }))
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-
 app.get('/', (req, res) => {
     res.send({data:'Hello World!'});
     }

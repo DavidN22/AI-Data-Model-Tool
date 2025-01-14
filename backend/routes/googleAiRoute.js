@@ -43,6 +43,7 @@ router.use((req, res, next) => {
     sessionId = randomBytes(16).toString('hex');
     res.cookie('sessionId', sessionId, {
       httpOnly: true,
+      secure: true,
       sameSite: 'None',
       maxAge: 20 * 60 * 1000, 
     });
