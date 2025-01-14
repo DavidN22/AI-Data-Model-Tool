@@ -1,9 +1,10 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { apiKey } from '../api-key.js';
+import { randomBytes } from 'crypto';
 
 const router = express.Router();
-
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
@@ -24,20 +25,56 @@ Example:
 NEVER respond in JSON format unless the message explicitly starts with "The user pressed the Generate data model button. Also dont create composite keys."
 `;
 
-let chatHistory = [];
+const chatHistories = {};
 const MAX_CHAT_HISTORY_LENGTH = 10;
 
+router.use(cookieParser());
+
+setInterval(() => {
+  Object.keys(chatHistories).forEach((sessionId) => {
+    if (chatHistories[sessionId]) {
+      delete chatHistories[sessionId];
+      console.log(`Deleted chat history for expired session: ${sessionId}`);
+    }
+  });
+}, 20 * 60 * 1000); 
+
+router.use((req, res, next) => {
+  let sessionId = req.cookies.sessionId;
+
+  if (!sessionId) {
+    sessionId = randomBytes(16).toString('hex');
+    res.cookie('sessionId', sessionId, { httpOnly: true, secure: true, maxAge:  20 * 60 * 1000 });
+    chatHistories[sessionId] = [];
+  }
+
+  req.sessionId = sessionId;
+
+  next();
+});
+
+
+
+
 router.post('/', async (req, res) => {
+  console.log(chatHistories);
   const { message } = req.body;
+  const sessionId = req.sessionId;
 
   if (!message) {
     return res.status(400).json({ error: 'Message is required' });
   }
 
   try {
+    if (!chatHistories[sessionId]) {
+      chatHistories[sessionId] = [];
+    }
+
+    const chatHistory = chatHistories[sessionId];
     chatHistory.push({ role: 'user', content: message });
+
     if (chatHistory.length > MAX_CHAT_HISTORY_LENGTH) {
-      chatHistory = chatHistory.slice(-MAX_CHAT_HISTORY_LENGTH);
+      chatHistories[sessionId] = [chatHistory[0], ...chatHistory.slice(-MAX_CHAT_HISTORY_LENGTH + 1)];
     }
 
     const prompt = `
@@ -50,10 +87,6 @@ router.post('/', async (req, res) => {
     const result = await model.generateContent(prompt);
     const aiResponse = result.response.text();
 
-    if (!message.startsWith('The user pressed the Generate data model button') && aiResponse.startsWith('{')) {
-      throw new Error('AI responded in JSON format when it was not allowed.');
-    }
-
     chatHistory.push({ role: 'assistant', content: aiResponse });
 
     res.json({ response: aiResponse });
@@ -64,40 +97,44 @@ router.post('/', async (req, res) => {
 });
 
 router.post('/clear', (req, res) => {
-  chatHistory = [];
+  const sessionId = req.sessionId;
+
+  delete chatHistories[sessionId];
+  res.clearCookie('sessionId');
   res.json({ message: 'Chat history cleared' });
 });
 
 router.post('/googleGenerate', async (req, res) => {
+  const sessionId = req.sessionId;
   try {
     const prompt = `
-    The user pressed the Generate data model button. Generate a JSON object representing nodes and edges for a data model Only respond is JSON format and nothing else. 
-    Example JSON response:
-    {
-   "nodes": [
-  {
-    "id": "example_users",
-    "type": "custom",
-    "data": {
-      "label": "Example_Users",
-      "schema": [
-        { "name": "id", "type": "UUID", "constraints": "PRIMARY KEY" },
-        { "name": "name", "type": "VARCHAR(255)", "constraints": "NOT NULL" },
-        { "name": "email", "type": "VARCHAR(255)", "constraints": "UNIQUE NOT NULL" },
-        { "name": "created_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" }
-      ]
-    },
-    "position": { "x": 100, "y": 50 }
-  }
-      ],
-      "edges": [
-        { "id": "e1", "source": "users", "target": "orders", "label": "user_id" }
-      ]
-    }
+      The user pressed the Generate data model button. Generate a JSON object representing nodes and edges for a data model. Only respond in JSON format and nothing else. 
+      Example JSON response:
+      {
+        "nodes": [
+          {
+            "id": "example_users",
+            "type": "custom",
+            "data": {
+              "label": "Example_Users",
+              "schema": [
+                { "name": "id", "type": "UUID", "constraints": "PRIMARY KEY" },
+                { "name": "name", "type": "VARCHAR(255)", "constraints": "NOT NULL" },
+                { "name": "email", "type": "VARCHAR(255)", "constraints": "UNIQUE NOT NULL" },
+                { "name": "created_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" }
+              ]
+            },
+            "position": { "x": 100, "y": 50 }
+          }
+        ],
+        "edges": [
+          { "id": "e1", "source": "users", "target": "orders", "label": "user_id" }
+        ]
+      }
 
-    History of conversation:
-    ${chatHistory.map((entry) => `${entry.role}: ${entry.content}`).join('\n')}
-  `;
+      Chat History:
+      ${chatHistories[sessionId].map((entry) => `${entry.role}: ${entry.content}`).join('\n')}
+    `;
 
     const result = await model.generateContent(prompt);
     const aiResponse = result.response.text();
@@ -111,7 +148,7 @@ router.post('/googleGenerate', async (req, res) => {
       return res.status(500).json({ error: 'AI response is not in the expected JSON format.' });
     }
 
-    chatHistory.push({ role: 'assistant', content: aiResponse });
+    chatHistories[sessionId].push({ role: 'assistant', content: aiResponse });
 
     res.json(parsedResponse);
   } catch (error) {
@@ -120,34 +157,4 @@ router.post('/googleGenerate', async (req, res) => {
   }
 });
 
-router.post('/merge', async (req, res) => {
-    const { message } = req.body;
-    try {
-      const prompt = `
-        Merge the users new table/tables into the existing data model and try to connect it to the current model. Only respond in JSON format and nothing else.
-        ${message},
-        History of conversation:
-        ${chatHistory.map((entry) => `${entry.role}: ${entry.content}`).join('\n')}
-      `;
-      const result = await model.generateContent(prompt);
-      const aiResponse = result.response.text();
-      
-      let parsedResponse;
-  
-      try {
-        const cleanedResponse = aiResponse.replace(/```json/g, '').replace(/```/g, '');
-        parsedResponse = JSON.parse(cleanedResponse);
-      } catch (error) {
-        console.error('Failed to parse AI response:', error.message);
-        return res.status(500).json({ error: 'AI response is not in the expected JSON format.' });
-      }
-  
-      chatHistory.push({ role: 'assistant', content: aiResponse });
-  
-      res.json(parsedResponse);
-    } catch (error) {
-      console.error('Error generating data model:', error.message);
-      res.status(500).json({ error: 'Failed to generate data model.' });
-    }
-  });
 export default router;

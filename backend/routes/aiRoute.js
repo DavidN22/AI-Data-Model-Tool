@@ -4,7 +4,7 @@ import { apiKey } from '../api-key.js';
 const router = express.Router();
 
 const openai = new OpenAI({
-  apiKey: apiKey,
+  apiKey: "YOUR_API_KEY",
 });
 
 const systemMessage = {
