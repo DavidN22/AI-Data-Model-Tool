@@ -90,14 +90,20 @@ router.post("/", async (req, res) => {
     res.setHeader("Content-Type", "text/plain");
     res.setHeader("Transfer-Encoding", "chunked");
 
-    // Iterate over the response stream and send chunks to the client
+    let aiResponse = "";
+
     for await (const chunk of result.stream) {
       if (chunk.text) {
-        res.write(chunk.text());
+        const textChunk = chunk.text();
+        aiResponse += textChunk;
+        res.write(textChunk);
       }
     }
 
-    res.end(); // Close the connection when done
+    // Store AI response in chat history
+    chatHistory.push({ role: "assistant", content: aiResponse });
+
+    res.end();
   } catch (error) {
     console.error("Error calling Gemini API:", error.message);
     res.status(500).json({
@@ -105,6 +111,7 @@ router.post("/", async (req, res) => {
     });
   }
 });
+
 
 router.post("/clear", (req, res) => {
   console.log(chatHistories)
