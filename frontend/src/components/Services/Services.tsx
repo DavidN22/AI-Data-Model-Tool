@@ -114,40 +114,44 @@ import { initialNodes, initialEdges } from './InitialNodes';
       setManualNodes([]);
       setIsFirstAdd(true);
     };
-    const fetchAIResponse = async (input: string, manualNodes: Node[]) => {
- 
+    const fetchAIResponse = async (input: string, manualNodes: Node[], onData: (chunk: string) => void) => {
       try {
-        // Construct the message conditionally based on manualNodes
         const message = manualNodes.length > 0
           ? `${input} this is a new node/nodes that were manually added ${JSON.stringify(manualNodes)}`
           : input;
     
-          const response = await fetch('https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message }),
-            credentials: 'include',
-          });
-     
-        if (!response.ok) {
+        const response = await fetch('https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message }),
+          credentials: 'include',
+        });
+    
+        if (!response.ok || !response.body) {
           throw new Error('Failed to fetch AI response');
-        } 
+        }
     
-        const data = await response.json();
-        const formattedContent = data.response
-          .replace(/\d\.\s/g, '\n$&')
-          .trim()
-          .split(/\n+/)
-          .map((line: string) => line.trim())
-          .filter((line: string) => line)
-          .join('\n');
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
     
-        return formattedContent;
+        let finalResponse = "";
+    
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+    
+          const chunk = decoder.decode(value, { stream: true });
+          finalResponse += chunk;
+          onData(chunk); // Update UI incrementally
+        }
+    
+        return finalResponse.trim();
       } catch (error) {
-        console.error('Error fetching AI response:', error);
+        console.error("Error fetching AI response:", error);
         throw error;
       }
     };
+    
    
     return {
       nodes,

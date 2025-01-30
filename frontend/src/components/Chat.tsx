@@ -54,26 +54,33 @@ export function Chat({
         content: input,
         role: "user",
       };
-      setMessages([...messages, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       setInput("");
       setChatLoading(true);
-
+  
+      let streamedContent = "";
+  
       try {
-        const formattedContent = await fetchAIResponse(input, manualNodes);
-        const aiResponse: Message = {
-          id: Date.now(),
-          content: formattedContent,
-          role: "assistant",
-        };
-        setMessages((prevMessages) => [...prevMessages, aiResponse]);
+        await fetchAIResponse(input, manualNodes, (chunk) => {
+          streamedContent += chunk;
+  
+          // Update last assistant message or create a new one
+          setMessages((prevMessages) => {
+            const lastMessage = prevMessages[prevMessages.length - 1];
+            if (lastMessage?.role === "assistant") {
+              return prevMessages.slice(0, -1).concat({ ...lastMessage, content: streamedContent });
+            } else {
+              return [...prevMessages, { id: Date.now(), content: streamedContent, role: "assistant" }];
+            }
+          });
+        });
       } catch (error) {
         console.error("Error fetching AI response:", error);
         setMessages((prevMessages) => [
           ...prevMessages,
           {
             id: Date.now(),
-            content:
-              "Error: An unexpected error occurred. Please try again or refresh the browser for fresh logs.",
+            content: "Error: An unexpected error occurred. Please try again.",
             role: "assistant",
           },
         ]);

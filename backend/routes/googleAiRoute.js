@@ -5,7 +5,7 @@ import { randomBytes } from "crypto";
 
 const router = express.Router();
 const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
 const systemMessage = `
 You are a dedicated data-modeling assistant only and nothing else. Respond to user queries with high-level explanations about database tables and their columns in a numbered format and important keywords **bolded**. 
@@ -56,7 +56,6 @@ router.use((req, res, next) => {
 });
 
 router.post("/", async (req, res) => {
-  console.log(chatHistories);
   const { message } = req.body;
   const sessionId = req.sessionId;
 
@@ -82,18 +81,23 @@ router.post("/", async (req, res) => {
     const prompt = `
       System: ${systemMessage}
       Chat History:
-      ${chatHistory
-        .map((entry) => `${entry.role}: ${entry.content}`)
-        .join("\n")}
+      ${chatHistory.map((entry) => `${entry.role}: ${entry.content}`).join("\n")}
       User: ${message}
     `;
 
-    const result = await model.generateContent(prompt);
-    const aiResponse = result.response.text();
+    const result = await model.generateContentStream(prompt);
 
-    chatHistory.push({ role: "assistant", content: aiResponse });
+    res.setHeader("Content-Type", "text/plain");
+    res.setHeader("Transfer-Encoding", "chunked");
 
-    res.json({ response: aiResponse });
+    // Iterate over the response stream and send chunks to the client
+    for await (const chunk of result.stream) {
+      if (chunk.text) {
+        res.write(chunk.text());
+      }
+    }
+
+    res.end(); // Close the connection when done
   } catch (error) {
     console.error("Error calling Gemini API:", error.message);
     res.status(500).json({
