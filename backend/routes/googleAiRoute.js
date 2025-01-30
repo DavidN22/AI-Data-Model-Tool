@@ -107,6 +107,7 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/clear", (req, res) => {
+  console.log(chatHistories)
   const sessionId = req.sessionId;
 
   delete chatHistories[sessionId];
