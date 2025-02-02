@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { SchemaEditor } from "./SchemaEditor";
 import { Node } from "reactflow";
 import { useDataModelServices } from "./Services/Services";
+import { Modal } from "./Modal";
 
 interface ChatProps {
   generateDataModel: () => void;
@@ -193,26 +194,33 @@ export function Chat({
       {!showSchemaEditor && (
         <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4">
           <div className="flex space-x-2 items-end">
-            <textarea
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                e.target.style.height = "auto";
-                e.target.style.height = `${e.target.scrollHeight}px`;
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(e);
-                  e.currentTarget.style.height = "auto";
-                }
-              }}
-              placeholder="Create a simple to-do list data model"
-              className="flex-grow px-4 py-2 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={1}
-              disabled={chatLoading || loading}
-              style={{ lineHeight: "1.5", overflow: "hidden" }}
-            />
+          <textarea
+  value={input}
+  onChange={(e) => {
+    setInput(e.target.value);
+    e.target.style.height = "auto";
+    const newHeight = e.target.scrollHeight;
+    e.target.style.height = `${Math.min(newHeight, 150)}px`; // Allow dynamic growth up to 150px
+    e.target.style.overflowY = newHeight > 150 ? "auto" : "hidden"; // Show scrollbar only if needed
+  }}
+  onKeyDown={(e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+      e.currentTarget.style.height = "auto";
+    }
+  }}
+  placeholder="Create a simple to-do list data model"
+  className="flex-grow px-4 py-2 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+  rows={1}
+  disabled={chatLoading || loading}
+  style={{
+    lineHeight: "1.5",
+    maxHeight: "150px", // Prevent excessive growth
+    overflowY: "hidden", // Initially hide overflow
+  }}
+/>
+
             <button
               type="submit"
               className={`px-4 py-2 text-white rounded focus:outline-none focus:ring-2 ${
@@ -261,62 +269,50 @@ export function Chat({
         </div>
       )}
 
-      {/* How to Use Modal */}
-      {showHowToUse && (
-      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-xl max-w-lg w-full">
-        <h2 className="text-2xl font-extrabold text-gray-800 mb-6 text-center">
-          How to Use
-        </h2>
-        <ol className="list-decimal list-inside space-y-4 text-gray-700">
-          <li>
-            Talk with the AI and discuss the type of project and{" "}
-            <strong>SQL model</strong> you would like.
-          </li>
-          <li>
-            The AI will then respond in <strong>text format</strong> of the{" "}
-            <strong>SQL design</strong>.
-          </li>
-          <li>
-            If you are happy with the current design model that the AI generated, 
-            press the <strong>Generate Data Model</strong> button, and your 
-            <strong>SQL model</strong> should appear.
-          </li>
-          <li>
-            More advanced features like the <strong>Switch to Input</strong> allow 
-            you to create your own tables and <strong>merge</strong> them with an 
-            already active AI model.
-          </li>
-          <li>
-            Pressing the <strong>SQL</strong> button on the top right of a table 
-            will show the SQL string of the table.
-          </li>
-        </ol>
-    
-        <p className="mt-6 text-gray-600 text-sm">
-          If you want to have full control over the project, visit this{" "}
-          <a
-            href="https://github.com/DavidN22/AI-Data-Model-Tool"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 font-medium underline hover:text-blue-800"
-          >
-            GitHub link
-          </a>, clone the repo, and follow the readME on how to get started. Happy building!
-        </p>
-    
-        <div className="flex justify-end mt-8">
-          <button
-            onClick={() => setShowHowToUse(false)}
-            className="px-5 py-2 text-white bg-gradient-to-r from-red-500 to-red-600 rounded-lg shadow hover:from-red-600 hover:to-red-700 focus:ring-4 focus:ring-red-300"
-          >
-            Close
-          </button>
-        </div>
-      </div>
+ {/* Conditionally Render the Modal */}
+ {showHowToUse && (
+  <Modal title="How to Use" onClose={() => setShowHowToUse(false)}>
+    <div>
+      <ol className="list-decimal list-inside space-y-4 text-gray-700">
+        <li>
+          Talk with the AI and discuss the type of project and{" "}
+          <strong>SQL model</strong> you would like.
+        </li>
+        <li>
+          The AI will then respond in <strong>text format</strong> of
+          the <strong>SQL design</strong>.
+        </li>
+        <li>
+          If you are happy with the current design model that the AI
+          generated, press the <strong>Generate Data Model</strong>{" "}
+          button, and your <strong>SQL model</strong> should appear.
+        </li>
+        <li>
+          More advanced features like the <strong>Switch to Input</strong> allow 
+          you to create your own tables and <strong>merge</strong> them with an 
+          already active AI model.
+        </li>
+        <li>
+          Pressing the <strong>SQL</strong> button on the top right of a table 
+          will show the SQL string of the table.
+        </li>
+      </ol>
+      <p className="mt-6 text-gray-600 text-sm">
+        If you want full control over the project, visit this{" "}
+        <a
+          href="https://github.com/DavidN22/AI-Data-Model-Tool"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 font-medium underline hover:text-blue-800"
+        >
+          GitHub link
+        </a>
+        , clone the repo, and follow the README on how to get started.
+        Happy building!
+      </p>
     </div>
-    
-      )}
+  </Modal>
+)}
     </div>
   );
 }
