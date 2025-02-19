@@ -15,7 +15,6 @@ const modelJson = genAI.getGenerativeModel({
   },
 });
 
-console.log("modelJson", schemaAI.schemaOne);
 const systemMessage = `
 You are a dedicated data-modeling assistant only and nothing else. Respond to user queries with high-level explanations about database tables and their columns in a numbered format and important keywords **bolded**. 
 Example:

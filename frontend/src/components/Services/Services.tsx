@@ -115,7 +115,6 @@ import { initialNodes, initialEdges } from './InitialNodes';
       setIsFirstAdd(true);
     };
 
-    console.log(generateDataModel)
     const fetchAIResponse = async (input: string, manualNodes: Node[], onData: (chunk: string) => void) => {
       try {
         const message = manualNodes.length > 0
