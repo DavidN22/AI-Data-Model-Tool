@@ -1,12 +1,21 @@
 import express from "express";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { apiKey } from "../api-key.js";
 import { randomBytes } from "crypto";
+import {schemaAI} from "../schemaAI.js";
 
 const router = express.Router();
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+const modelJson = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash-exp",
+  generationConfig: {
+    responseMimeType: "application/json",
+    responseSchema: schemaAI.schemaOne,
+  },
+});
 
+console.log("modelJson", schemaAI.schemaOne);
 const systemMessage = `
 You are a dedicated data-modeling assistant only and nothing else. Respond to user queries with high-level explanations about database tables and their columns in a numbered format and important keywords **bolded**. 
 Example:
@@ -20,6 +29,9 @@ Example:
    - user_id: UUID
    - total: DECIMAL
    - created_at: TIMESTAMP
+
+Then an explanation of the table and its columns.
+You can talk high level with the user if they should have any questions about the data model they are creating.
 
 NEVER respond in JSON format unless the message explicitly starts with "The user pressed the Generate data model button. Also dont create composite keys."
 `;
@@ -160,7 +172,7 @@ router.post("/googleGenerate", async (req, res) => {
         .join("\n")}
     `;
 
-    const result = await model.generateContent(prompt);
+    const result = await modelJson.generateContent(prompt);
     const aiResponse = result.response.text();
 
     let parsedResponse;
