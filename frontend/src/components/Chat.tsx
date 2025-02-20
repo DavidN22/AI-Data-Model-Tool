@@ -54,79 +54,35 @@ export function Chat({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (input.trim()) {
-      const userMessage: Message = {
-        id: Date.now(),
-        content: input,
-        role: "user",
-      };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setInput("");
-      setChatLoading(true);
+    if (!input.trim()) return;
   
-      let streamedContent = "";
-      const wordQueue: string[] = [];
-      let assistantMessageId: number | undefined;
-      let interval: NodeJS.Timeout | null = null;
-      let isReceivingChunks = true; // ✅ Track if AI is still sending data
+    // Append user message
+    const userMessage: Message = { id: messages.length, content: input, role: 'user' };
+    setMessages(prev => [...prev, userMessage]);
+    setInput(''); // Clear input field
+    setChatLoading(true);
   
-      try {
-        await fetchAIResponse(input, manualNodes, (chunk) => {
-          wordQueue.push(...chunk.split(" ")); // Add words to the queue
+    // Create an assistant message placeholder and append it to the state first
+    const assistantMessageId = messages.length + 1;
+    setMessages(prev => [...prev, { id: assistantMessageId, content: '', role: 'assistant' }]);
   
-          // ✅ If it's the last chunk, mark that we're done receiving data
-          if (chunk.trim().endsWith(".")) {
-            isReceivingChunks = false;
-          }
-  
-          // If there's already an interval running, let it handle new words
-          if (interval) return;
-  
-          interval = setInterval(() => {
-            if (wordQueue.length > 0) {
-              streamedContent += wordQueue.shift() + " ";
-  
-              setMessages((prevMessages) => {
-                const lastMessage = prevMessages[prevMessages.length - 1];
-  
-                if (lastMessage?.role === "assistant") {
-                  return prevMessages
-                    .slice(0, -1)
-                    .concat({ ...lastMessage, content: streamedContent });
-                } else {
-                  assistantMessageId = Date.now();
-                  return [
-                    ...prevMessages,
-                    { id: assistantMessageId, content: streamedContent, role: "assistant" },
-                  ];
-                }
-              });
-            } else {
-              // ✅ Only stop loading if all words are displayed & no more chunks are coming
-              if (!isReceivingChunks) {
-                clearInterval(interval!);
-                interval = null;
-                setChatLoading(false);
-              }
-            }
-          }, 50); // Optimized delay
+    try {
+      await fetchAIResponse(input, manualNodes, (chunk) => {
+        setMessages(prevMessages => {
+          return prevMessages.map(msg => 
+            msg.id === assistantMessageId 
+              ? { ...msg, content: msg.content + chunk }  // Directly append the new chunk
+              : msg
+          );
         });
-  
-        isReceivingChunks = false; // ✅ Ensure this is marked false when AI stops sending data
-      } catch (error) {
-        console.error("Error fetching AI response:", error);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            id: Date.now(),
-            content: "Error: An unexpected error occurred. Please try again.",
-            role: "assistant",
-          },
-        ]);
-        setChatLoading(false);
-      }
+      });
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+    } finally {
+      setChatLoading(false);
     }
   };
+  
   
 
   const handleClear = async () => {
