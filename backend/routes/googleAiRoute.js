@@ -6,7 +6,7 @@ import { getChatHistory, addToChatHistory, clearChatHistory } from '../Services/
 const router = express.Router();
 
 const genAI = new GoogleGenerativeAI(GeminiKey);
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 
 router.post('/', async (req, res) => {
@@ -19,22 +19,33 @@ router.post('/', async (req, res) => {
   try {
     addToChatHistory({ role: 'user', content: message });
 
+    const chatHistory = getChatHistory();
     const prompt = `
       Chat History:
-      ${getChatHistory().map((entry) => `${entry.role}: ${entry.content}`).join('\n')}
+      ${chatHistory.map((entry) => `${entry.role}: ${entry.content}`).join('\n')}
       User: ${message}
     `;
 
-    const result = await model.generateContent(prompt);
-    const aiResponse = result.response.text();
+    const result = await model.generateContentStream(prompt);
 
-    if (!message.startsWith('The user pressed the Generate data model button') && aiResponse.startsWith('{')) {
-      throw new Error('AI responded in JSON format when it was not allowed.');
+    res.setHeader("Content-Type", "text/plain");
+    res.setHeader("Transfer-Encoding", "chunked");
+
+    let aiResponse = "";
+
+    for await (const chunk of result.stream) {
+      if (chunk.text) {
+        const textChunk = chunk.text();
+        aiResponse += textChunk;
+        res.write(textChunk);
+      }
     }
 
-    addToChatHistory({ role: 'assistant', content: aiResponse });
+    // Store AI response in chat history
+    console.log("Adding AI response to chat history");
+    addToChatHistory({ role: "assistant", content: aiResponse });
 
-    res.json({ response: aiResponse });
+    res.end();
   } catch (error) {
     console.error('Error calling Gemini API:', error.message);
     res.status(500).json({ error: 'Failed to fetch AI response or invalid response format.' });

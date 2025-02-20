@@ -9,8 +9,6 @@ const openai = new OpenAI({
   apiKey: OpenAiKey,
 });
 
-
-
 router.post('/', async (req, res) => {
   const { message } = req.body;
 
@@ -21,21 +19,34 @@ router.post('/', async (req, res) => {
   try {
     addToChatHistory({ role: 'user', content: message });
 
-    const messages = getChatHistory();
+    const prompt = `
+      Chat History:
+      ${getChatHistory().map((entry) => `${entry.role}: ${entry.content}`).join('\n')}
+      User: ${message}
+    `;
+
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages,
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: prompt }],
+      stream: true,
     });
 
-    const aiResponse = response.choices[0].message.content;
+    res.setHeader("Content-Type", "text/plain");
+    res.setHeader("Transfer-Encoding", "chunked");
 
-    if (!message.startsWith('The user pressed the Generate data model button') && aiResponse.trim().startsWith('{')) {
-      throw new Error('AI responded in JSON format when it was not allowed.');
+    let aiResponse = "";
+
+    for await (const chunk of response) {
+      if (chunk.choices && chunk.choices[0].delta && chunk.choices[0].delta.content) {
+        const textChunk = chunk.choices[0].delta.content;
+        aiResponse += textChunk;
+        res.write(textChunk);
+      }
     }
+    // Store AI response in chat history
+    addToChatHistory({ role: "assistant", content: aiResponse });
 
-    addToChatHistory({ role: 'assistant', content: aiResponse });
-
-    res.json({ response: aiResponse });
+    res.end();
   } catch (error) {
     console.error('Error calling OpenAI:', error.message);
     res.status(500).json({ error: 'Failed to fetch AI response or invalid response format.' });
@@ -79,7 +90,7 @@ router.post('/generateModel', async (req, res) => {
     `;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4',
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -115,7 +126,7 @@ router.post('/merge', async (req, res) => {
     `;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4',
       messages: [{ role: 'user', content: prompt }],
     });
 

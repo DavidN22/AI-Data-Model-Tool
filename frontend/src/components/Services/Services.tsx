@@ -118,35 +118,40 @@ export const useDataModelServices = () => {
     setIsFirstAdd(true);
   };
 
-  const fetchAIResponse = async (input: string, manualNodes: Node[]) => {
+  const fetchAIResponse = async (input: string, manualNodes: Node[], onData: (chunk: string) => void) => {
     try {
-      const message =
-        manualNodes.length > 0
-          ? `${input} this is a new node/nodes that were manually added ${JSON.stringify(manualNodes)}`
-          : input;
-
+      const message = manualNodes.length > 0
+        ? `${input} this is a new node/nodes that were manually added ${JSON.stringify(manualNodes)}`
+        : input;
+  
       const response = await fetch(getEndpoint(''), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
+        credentials: 'include',
       });
-
-      if (!response.ok) {
+  
+      if (!response.ok || !response.body) {
         throw new Error('Failed to fetch AI response');
       }
-
-      const data = await response.json();
-      const formattedContent = data.response
-        .replace(/\d\.\s/g, '\n$&')
-        .trim()
-        .split(/\n+/)
-        .map((line: string) => line.trim())
-        .filter((line: string) => line)
-        .join('\n');
-
-      return formattedContent;
+  
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+  
+      let finalResponse = "";
+  
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+  
+        const chunk = decoder.decode(value, { stream: true });
+        finalResponse += chunk;
+        onData(chunk); // Update UI incrementally
+      }
+  
+      return finalResponse.trim();
     } catch (error) {
-      console.error('Error fetching AI response:', error);
+      console.error("Error fetching AI response:", error);
       throw error;
     }
   };

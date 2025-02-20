@@ -20,7 +20,7 @@ export function AIDataModelVisualizer() {
     <div className="h-screen w-full p-4 bg-gray-100 flex flex-col">
       <h1 className="text-2xl font-bold mb-4">AI Data Model Visualizer</h1>
       <div className="flex-grow flex gap-4">
-        <div className="w-1/3 max-w-md">
+        <div className="w-[40%] max-w-5xl">
           <Chat
             generateDataModel={generateDataModel}
             mergeDataModel={mergeDataModel}

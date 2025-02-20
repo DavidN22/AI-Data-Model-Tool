@@ -39,31 +39,38 @@ export function Chat({ generateDataModel, mergeDataModel, loading, resetNodesAnd
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (input.trim()) {
-      const newMessage: Message = { id: Date.now(), content: input, role: 'user' };
-      setMessages([...messages, newMessage]);
-      setInput('');
-      setChatLoading(true);
-
-      try {
-        const formattedContent = await fetchAIResponse(input, manualNodes); 
-        const aiResponse: Message = { id: Date.now(), content: formattedContent, role: 'assistant' };
-        setMessages((prevMessages) => [...prevMessages, aiResponse]);
-      } catch (error) {
-        console.error('Error fetching AI response:', error);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            id: Date.now(),
-            content: 'Error: An unexpected error occurred. Please try again or refresh the browser for fresh logs.',
-            role: 'assistant',
-          },
-        ]);
-      } finally {
-        setChatLoading(false);
-      }
+    if (!input.trim()) return;
+  
+    // Append user message
+    const userMessage: Message = { id: messages.length, content: input, role: 'user' };
+    setMessages(prev => [...prev, userMessage]);
+    setInput(''); // Clear input field
+    setChatLoading(true);
+  
+    // Create an assistant message placeholder and append it to the state first
+    const assistantMessageId = messages.length + 1;
+    setMessages(prev => [...prev, { id: assistantMessageId, content: '', role: 'assistant' }]);
+  
+    try {
+      await fetchAIResponse(input, manualNodes, (chunk) => {
+        setMessages(prevMessages => {
+          return prevMessages.map(msg => 
+            msg.id === assistantMessageId 
+              ? { ...msg, content: msg.content + chunk }  // Directly append the new chunk
+              : msg
+          );
+        });
+      });
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+    } finally {
+      setChatLoading(false);
     }
   };
+  
+  
+
+  
 
   const handleClear = async () => {
     try {
@@ -132,25 +139,28 @@ export function Chat({ generateDataModel, mergeDataModel, loading, resetNodesAnd
         ) : (
           <>
             {/* Chat Messages */}
-            {messages.map((m) => (
-              <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            {messages.map((m, index) => (
+              <div
+                key={m.id}
+                className={`flex ${
+                  m.role === "user" ? "justify-end" : "justify-center"
+                } ${m.role !== "user" && index > 0 ? "mt-4" : ""}`} // Adds space for AI messages
+              >
                 <div
-                  className={`max-w-[80%] whitespace-pre-wrap rounded-lg px-4 py-2 ${
-                    m.role === 'user' ? 'bg-blue-100 text-blue-900' : 'bg-gray-100 text-gray-800'
+                  className={`whitespace-pre-wrap rounded-lg px-6 py-3 ${
+                    m.role === "user"
+                      ? "bg-blue-100 text-blue-900 text-right max-w-[70%]" // Keeps user messages compact
+                      : "text-left max-w-[90%] md:max-w-[75%] min-w-[100%] w-auto" // AI messages take up more space
                   }`}
                   dangerouslySetInnerHTML={{
                     __html: m.content
-                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                      .replace(/`([^`]*)`/g, '<strong>$1</strong>'),
+                      .replace(/\\/g, '')
+                      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                      .replace(/`([^`]*)`/g, "<strong>$1</strong>"),
                   }}
                 ></div>
               </div>
             ))}
-            {chatLoading && (
-              <div className="flex justify-start">
-                <div className="max-w-[80%] rounded-lg px-4 py-2 bg-gray-100 text-gray-800">Typing...</div>
-              </div>
-            )}
             <div ref={messagesEndRef}></div>
           </>
         )}
