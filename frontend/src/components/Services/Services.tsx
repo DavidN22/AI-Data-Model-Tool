@@ -143,7 +143,16 @@ import { initialNodes, initialEdges } from './InitialNodes';
     
           const chunk = decoder.decode(value, { stream: true });
           finalResponse += chunk;
-          onData(chunk); // Update UI incrementally
+          //break the chunk into  words after space
+          const words = chunk.split(" ");
+          for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            //slow down the response to simulate typing
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            onData(word + (i < words.length - 1 ? " " : ""));
+          }
+      
+         // Update UI incrementally
         }
     
         return finalResponse.trim();
