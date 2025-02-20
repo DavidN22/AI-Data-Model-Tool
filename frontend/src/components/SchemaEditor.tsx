@@ -146,7 +146,7 @@ export function SchemaEditor({ onSubmit, manualNodes, mergeDataModel, loading }:
   }`}
   disabled={loading}
 >
-  {loading ? 'Merging...' : 'Merge with current AI model'}
+  {loading ? 'Merging...' : 'Merge with current AI model (beta)'}
 </button>
 
     </div>

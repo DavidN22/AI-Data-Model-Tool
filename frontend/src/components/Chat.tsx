@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { SchemaEditor } from "./SchemaEditor";
 import { Node } from "reactflow";
 import { Modal } from "./Modal";
-
+import { useChat } from "./global/ChatContext";
 interface ChatProps {
   generateDataModel: () => void;
   mergeDataModel: (arg: Node[]) => void;
@@ -19,6 +19,7 @@ interface ChatProps {
     schema: { name: string; type: string }[]
   ) => void;
   manualNodes: Node[];
+  setIsChatOpen: (arg: boolean) => void;
 }
 
 interface Message {
@@ -28,6 +29,7 @@ interface Message {
 }
 
 export function Chat({
+  setIsChatOpen,
   generateDataModel,
   mergeDataModel,
   loading,
@@ -42,7 +44,7 @@ export function Chat({
   const [showSchemaEditor, setShowSchemaEditor] = useState(false);
   const [showHowToUse, setShowHowToUse] = useState(false); // State to control the modal
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
+  const { clearChat } = useChat();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -55,23 +57,30 @@ export function Chat({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-  
+
     // Append user message
-    const userMessage: Message = { id: messages.length, content: input, role: 'user' };
-    setMessages(prev => [...prev, userMessage]);
-    setInput(''); // Clear input field
+    const userMessage: Message = {
+      id: messages.length,
+      content: input,
+      role: "user",
+    };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput(""); // Clear input field
     setChatLoading(true);
-  
+
     // Create an assistant message placeholder and append it to the state first
     const assistantMessageId = messages.length + 1;
-    setMessages(prev => [...prev, { id: assistantMessageId, content: '', role: 'assistant' }]);
-  
+    setMessages((prev) => [
+      ...prev,
+      { id: assistantMessageId, content: "", role: "assistant" },
+    ]);
+
     try {
       await fetchAIResponse(input, manualNodes, (chunk) => {
-        setMessages(prevMessages => {
-          return prevMessages.map(msg => 
-            msg.id === assistantMessageId 
-              ? { ...msg, content: msg.content + chunk }  // Directly append the new chunk
+        setMessages((prevMessages) => {
+          return prevMessages.map((msg) =>
+            msg.id === assistantMessageId
+              ? { ...msg, content: msg.content + chunk } // Directly append the new chunk
               : msg
           );
         });
@@ -82,20 +91,16 @@ export function Chat({
       setChatLoading(false);
     }
   };
-  
-  
 
   const handleClear = async () => {
     try {
       resetNodesAndEdges();
-      const response = await fetch(
-        "https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi/clear",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      clearChat();
+      const response = await fetch("https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi/clear", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
 
       if (response.ok) {
         setMessages([]);
@@ -111,9 +116,10 @@ export function Chat({
     <div className="flex flex-col h-full border border-gray-200 rounded-lg bg-white shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-gray-700">
+        <h2 className="hidden md:block text-lg font-semibold text-gray-700">
           {showSchemaEditor ? "Editor" : "AI Chat"}
         </h2>
+
         <div className="flex space-x-2">
           <button
             onClick={() => setShowHowToUse(true)} // Show the instructions modal
@@ -132,6 +138,12 @@ export function Chat({
             className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600 focus:ring-2 focus:ring-red-500"
           >
             {showSchemaEditor ? "Clear All" : "Clear All"}
+          </button>
+          <button
+            onClick={() => setIsChatOpen(false)}
+            className="block md:hidden px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600 focus:ring-2 focus:ring-red-500"
+          >
+            {showSchemaEditor ? "Close" : "Close"}
           </button>
         </div>
       </div>
@@ -166,7 +178,7 @@ export function Chat({
                   }`}
                   dangerouslySetInnerHTML={{
                     __html: m.content
-                      .replace(/\\/g, '')
+                      .replace(/\\/g, "")
                       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
                       .replace(/`([^`]*)`/g, "<strong>$1</strong>"),
                   }}
@@ -174,11 +186,7 @@ export function Chat({
               </div>
             ))}
 
-            {chatLoading && (
-              <div className="flex justify-start">
-                
-              </div>
-            )}
+            {chatLoading && <div className="flex justify-start"></div>}
             <div ref={messagesEndRef}></div>
           </>
         )}

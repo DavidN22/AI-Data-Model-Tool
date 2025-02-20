@@ -1,7 +1,7 @@
 import  { useState,useEffect } from 'react';
 import { Node, Edge } from 'reactflow';
 import { initialNodes, initialEdges } from './InitialNodes';
-
+import { useChat } from '../global/ChatContext';
 
   export const useDataModelServices = () => {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -10,6 +10,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
     const [isFirstAdd, setIsFirstAdd] = useState(true);
     const [manualNodes, setManualNodes] = useState<Node[]>([]);
     const [aiNodes, setAiNodes] = useState<Node[]>([]); 
+    const { chatHistory, addMessage } = useChat();
    useEffect(() => {
 }, [manualNodes]);
 
@@ -43,7 +44,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
     const response = await fetch('https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi/merge', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, chatHistory }),
       credentials: 'include',
     });
 
@@ -59,6 +60,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
         setNodes(mergedNodes);
         setEdges(mergedEdges);
         setIsFirstAdd(false);
+        addMessage("assistant", JSON.stringify(data));
 
       } else {
         console.error('Failed to merge data model');
@@ -81,6 +83,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
+          body: JSON.stringify({ chatHistory  }),
         });
     
         if (response.ok) {
@@ -96,6 +99,7 @@ import { initialNodes, initialEdges } from './InitialNodes';
           setNodes(aiGeneratedNodes);
           setEdges(aiGeneratedEdges);
           setIsFirstAdd(false);
+          addMessage("assistant", data);
         } else {
           console.error('Failed to fetch data model');
           throw new Error('Failed to fetch data model');
@@ -115,19 +119,19 @@ import { initialNodes, initialEdges } from './InitialNodes';
       setIsFirstAdd(true);
     };
 
-    const fetchAIResponse = async (input: string, manualNodes: Node[], onData: (chunk: string) => void) => {
+    const fetchAIResponse = async (input: string, manualNodes: Node[], onData: (chunk: string) => void) => { 
       try {
         const message = manualNodes.length > 0
           ? `${input} this is a new node/nodes that were manually added ${JSON.stringify(manualNodes)}`
           : input;
-    
+      
         const response = await fetch('https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message }),
+          body: JSON.stringify({ message, chatHistory  }),
           credentials: 'include',
         });
-    
+        addMessage("user", message);
         if (!response.ok || !response.body) {
           throw new Error('Failed to fetch AI response');
         }
@@ -151,15 +155,16 @@ import { initialNodes, initialEdges } from './InitialNodes';
             await new Promise((resolve) => setTimeout(resolve, 20));
             onData(word + (i < words.length - 1 ? " " : ""));
           }
-      
          // Update UI incrementally
+         console.log(chatHistory)
         }
-    
+        addMessage("assistant", finalResponse.trim());
         return finalResponse.trim();
       } catch (error) {
         console.error("Error fetching AI response:", error);
         throw error;
       }
+      
     };
     
    
