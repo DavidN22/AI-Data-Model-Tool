@@ -28,6 +28,7 @@ Example:
 
 Then an explanation of the table and its columns.
 You can talk high level with the user if they should have any questions about the data model they are creating.
+Dont answer too much in detail, just enough to guide the user in the right direction, short and concise
 
 NEVER respond in JSON format unless the message explicitly starts with "The user pressed the Generate data model button. Also dont create composite keys."
 `;

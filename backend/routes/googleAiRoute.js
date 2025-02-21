@@ -89,7 +89,8 @@ router.post("/googleGenerate", async (req, res) => {
         ]
       }
 
-      Chat History (!IMPORTANT! - Last messages being the most recent):
+      Chat History (!IMPORTANT! - Last messages being the most recent and Respond the schema part in a VALID SQL FORMAT,
+      assume the schema is then converted to a string for the user to then copy and paste into their database):
       ${chatHistory.map((entry) => `${entry.role}: ${entry.content}`).join("\n")}
      `;
 
