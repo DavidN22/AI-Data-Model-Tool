@@ -76,7 +76,7 @@ router.post("/googleGenerate", async (req, res) => {
               "label": "Example_Users",
               "schema": [
                 { "name": "id", "type": "UUID", "constraints": "PRIMARY KEY" },
-                { "name": "name", "type": "VARCHAR(255)", "constraints": "NOT NULL" },
+                { "name": "name", "type": "VARCHAR(255)", "constraints": "NOT NULL REFERENCES Users(id) ON DELETE CASCADE," },
                 { "name": "email", "type": "VARCHAR(255)", "constraints": "UNIQUE NOT NULL" },
                 { "name": "created_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" }
               ]
