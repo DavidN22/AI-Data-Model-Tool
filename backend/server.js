@@ -9,7 +9,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 app.use(
     cors({
-      origin: 'https://ai-data-model-tool.vercel.app', // Explicitly specify your frontend domain
+      origin: 'https://schemaql.com', // Explicitly specify your frontend domain
       credentials: true, // Allow credentials (cookies)
     })
   );
