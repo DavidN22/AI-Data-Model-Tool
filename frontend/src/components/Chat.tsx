@@ -184,7 +184,7 @@ export function Chat({
       } ${m.role !== "user" && index > 0 ? "mt-4" : ""}`}
     >
     <div
-      className={`whitespace-pre-wrap rounded-lg px-6 py-3 ${
+      className={`whitespace-pre-wrap break-words break-all overflow-hidden rounded-lg px-6 py-3 ${
         m.role === "user"
           ? "bg-blue-100 text-blue-900 text-right max-w-[70%]"
           : `text-left md:max-w-[75%] min-w-[100%] w-auto ${
