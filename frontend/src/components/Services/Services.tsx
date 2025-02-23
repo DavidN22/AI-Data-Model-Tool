@@ -120,6 +120,7 @@ import { useChat } from '../global/ChatContext';
     };
 
     const fetchAIResponse = async (input: string, manualNodes: Node[], onData: (chunk: string) => void) => { 
+      
       try {
         const message = manualNodes.length > 0
           ? `${input} this is a new node/nodes that were manually added ${JSON.stringify(manualNodes)}`
@@ -156,7 +157,6 @@ import { useChat } from '../global/ChatContext';
             onData(word + (i < words.length - 1 ? " " : ""));
           }
          // Update UI incrementally
-         console.log(chatHistory)
         }
         addMessage("assistant", finalResponse.trim());
         return finalResponse.trim();
