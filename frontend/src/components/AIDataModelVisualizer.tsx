@@ -23,7 +23,7 @@ export function AIDataModelVisualizer() {
   return (
     <div className="h-screen w-full p-4 bg-gray-100 flex flex-col relative">
       <h1 className="text-2xl font-bold mb-4 text-center sm:text-left">
-        AI Data Model Visualizer
+        SchemaQL
       </h1>
 
       {/* Chat Modal Button - Visible only on Mobile */}
@@ -35,19 +35,32 @@ export function AIDataModelVisualizer() {
       </button>
 
       <div className="flex-grow flex gap-4">
-        {/* Chat Panel - Hidden on Mobile, Shown on Desktop */}
-        <div className="hidden md:block w-[70%] max-w-5xl">
-          <Chat
-            generateDataModel={generateDataModel}
-            mergeDataModel={mergeDataModel}
-            setIsChatOpen={setIsChatOpen}
-            fetchAIResponse={fetchAIResponse}
-            loading={loading}
-            setLoading={setLoading}
-            resetNodesAndEdges={resetNodesAndEdges}
-            schemaAddNodes={handleAddNode}
-            manualNodes={manualNodes}
-          />
+        {/* Chat Panel - Dynamically Positioned */}
+        <div
+          className={`transition-all ${
+            isChatOpen
+              ? "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+              : "hidden md:flex w-[70%] max-w-5xl h-full"
+          }`}
+        >
+          <div
+            className={`bg-white shadow-lg overflow-y-auto ${
+              isChatOpen ? "w-screen h-screen" : "w-full h-full rounded-lg"
+            }`}
+          >
+            <Chat
+              generateDataModel={generateDataModel}
+              mergeDataModel={mergeDataModel}
+              setIsChatOpen={setIsChatOpen}
+              fetchAIResponse={fetchAIResponse}
+              isChatOpen={isChatOpen}
+              loading={loading}
+              setLoading={setLoading}
+              resetNodesAndEdges={resetNodesAndEdges}
+              schemaAddNodes={handleAddNode}
+              manualNodes={manualNodes}
+            />
+          </div>
         </div>
 
         {/* FlowChart Full Width on Mobile, Shrunk on Desktop */}
@@ -61,29 +74,6 @@ export function AIDataModelVisualizer() {
           />
         </div>
       </div>
-
-      {/* Chat Modal - Visible only on Mobile */}
-      {isChatOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-
-          {/* Chat Content (Scrollable) */}
-          <div className="flex-grow overflow-y-auto p-2 h-screen">
-            <Chat           
-              generateDataModel={generateDataModel}
-              setIsChatOpen={setIsChatOpen}
-              mergeDataModel={mergeDataModel}
-              fetchAIResponse={fetchAIResponse}
-              loading={loading}
-              setLoading={setLoading}
-              resetNodesAndEdges={resetNodesAndEdges}
-              schemaAddNodes={handleAddNode}
-              manualNodes={manualNodes}
-            />
-          </div>
-
-          {/* Input & Generate Button */}
-        </div>
-      )}
     </div>
   );
 }

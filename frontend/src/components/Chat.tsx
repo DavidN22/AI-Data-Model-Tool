@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef, FormEvent } from "react";
+import React, { useState, useRef, FormEvent } from "react";
 import { SchemaEditor } from "./SchemaEditor";
 import { Node } from "reactflow";
-import { Modal } from "./Modal";
+import { HowToUseModal } from "./HowToUseModal";
+import TypingIndicator from "./CustomTypingIndicator";
 import { useChat } from "./global/ChatContext";
 interface ChatProps {
   generateDataModel: () => void;
@@ -20,6 +21,7 @@ interface ChatProps {
   ) => void;
   manualNodes: Node[];
   setIsChatOpen: (arg: boolean) => void;
+  isChatOpen: boolean;
 }
 
 interface Message {
@@ -31,6 +33,7 @@ interface Message {
 export function Chat({
   setIsChatOpen,
   generateDataModel,
+  isChatOpen,
   mergeDataModel,
   loading,
   resetNodesAndEdges,
@@ -44,19 +47,19 @@ export function Chat({
   const [showSchemaEditor, setShowSchemaEditor] = useState(false);
   const [showHowToUse, setShowHowToUse] = useState(false); // State to control the modal
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
+
   const { clearChat } = useChat();
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setIsTyping(true);
     if (!input.trim()) return;
+
+    //scroll to bottom
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 150);
 
     // Append user message
     const userMessage: Message = {
@@ -77,6 +80,7 @@ export function Chat({
 
     try {
       await fetchAIResponse(input, manualNodes, (chunk) => {
+        setIsTyping(false);
         setMessages((prevMessages) => {
           return prevMessages.map((msg) =>
             msg.id === assistantMessageId
@@ -96,11 +100,14 @@ export function Chat({
     try {
       resetNodesAndEdges();
       clearChat();
-      const response = await fetch("https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi/clear", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const response = await fetch(
+        "https://ai-data-model-tool-backend-davidn22s-projects.vercel.app/api/googleAi/clear",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         setMessages([]);
@@ -150,7 +157,7 @@ export function Chat({
 
       {/* Main Content */}
       <div
-        className="flex-grow overflow-y-auto p-4 space-y-4"
+        className="flex-grow overflow-y-auto p-4 "
         style={{ height: "400px", overflowY: "auto" }}
       >
         {showSchemaEditor ? (
@@ -163,28 +170,48 @@ export function Chat({
         ) : (
           <>
             {/* Chat Messages */}
-            {messages.map((m, index) => (
-              <div
-                key={m.id}
-                className={`flex ${
-                  m.role === "user" ? "justify-end" : "justify-center"
-                } ${m.role !== "user" && index > 0 ? "mt-4" : ""}`} // Adds space for AI messages
-              >
-                <div
-                  className={`whitespace-pre-wrap rounded-lg px-6 py-3 ${
-                    m.role === "user"
-                      ? "bg-blue-100 text-blue-900 text-right max-w-[70%]" // Keeps user messages compact
-                      : "text-left max-w-[90%] md:max-w-[75%] min-w-[100%] w-auto" // AI messages take up more space
-                  }`}
-                  dangerouslySetInnerHTML={{
-                    __html: m.content
-                      .replace(/\\/g, "")
-                      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                      .replace(/`([^`]*)`/g, "<strong>$1</strong>"),
-                  }}
-                ></div>
-              </div>
-            ))}
+            {messages.map((m, index) => {
+  const isLastAssistantMessage =
+    m.role !== "user" && index === messages.length - 1;
+  const isFirstAssistantMessage =
+    m.role !== "user" && messages.findIndex((msg) => msg.role !== "user") === index;
+
+  return (
+    <div
+      key={m.id}
+      className={`flex ${
+        m.role === "user" ? "justify-end" : "justify-center"
+      } ${m.role !== "user" && index > 0 ? "mt-4" : ""}`}
+    >
+    <div
+      className={`whitespace-pre-wrap rounded-lg px-6 py-3 ${
+        m.role === "user"
+          ? "bg-blue-100 text-blue-900 text-right max-w-[70%]"
+          : `text-left md:max-w-[75%] min-w-[100%] w-auto ${
+              isLastAssistantMessage && !isFirstAssistantMessage
+                ? isChatOpen
+                  ? "min-h-[63vh]"
+                  : "min-h-[530px]"
+                : "min-h-[100px]"
+            }`
+      }`}
+      >
+      <span
+        dangerouslySetInnerHTML={{
+          __html: m.content
+            .replace(/\\/g, "")
+            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+            .replace(/`([^`]*)`/g, "<strong>$1</strong>"),
+        }}
+      ></span>
+
+      {/* Show Typing Indicator next to the AI message */}
+      {isLastAssistantMessage && isTyping && <TypingIndicator />}
+    </div>
+  </div>
+);
+
+})}
 
             {chatLoading && <div className="flex justify-start"></div>}
             <div ref={messagesEndRef}></div>
@@ -213,7 +240,7 @@ export function Chat({
                 }
               }}
               placeholder="Create a simple to-do list data model"
-              className="flex-grow px-4 py-2 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-grow px-4 py-2 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
               rows={1}
               disabled={chatLoading || loading}
               style={{
@@ -229,7 +256,7 @@ export function Chat({
                 chatLoading || loading
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-500 hover:bg-blue-600 focus:ring-blue-500"
-              }`}
+              } text-sm md:text-base`}
               disabled={chatLoading || loading}
               style={{ height: "42px" }}
             >
@@ -272,49 +299,7 @@ export function Chat({
       )}
 
       {/* Conditionally Render the Modal */}
-      {showHowToUse && (
-        <Modal title="How to Use" onClose={() => setShowHowToUse(false)}>
-          <div>
-            <ol className="list-decimal list-inside space-y-4 text-gray-700">
-              <li>
-                Talk with the AI and discuss the type of project and{" "}
-                <strong>SQL model</strong> you would like.
-              </li>
-              <li>
-                The AI will then respond in <strong>text format</strong> of the{" "}
-                <strong>SQL design</strong>.
-              </li>
-              <li>
-                If you are happy with the current design model that the AI
-                generated, press the <strong>Generate Data Model</strong>{" "}
-                button, and your <strong>SQL model</strong> should appear.
-              </li>
-              <li>
-                More advanced features like the <strong>Switch to Input</strong>{" "}
-                allow you to create your own tables and <strong>merge</strong>{" "}
-                them with an already active AI model.
-              </li>
-              <li>
-                Pressing the <strong>SQL</strong> button on the top right of a
-                table will show the SQL string of the table.
-              </li>
-            </ol>
-            <p className="mt-6 text-gray-600 text-sm">
-              If you want full control over the project, visit this{" "}
-              <a
-                href="https://github.com/DavidN22/AI-Data-Model-Tool"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 font-medium underline hover:text-blue-800"
-              >
-                GitHub link
-              </a>
-              , clone the repo, and follow the README on how to get started.
-              Happy building!
-            </p>
-          </div>
-        </Modal>
-      )}
+      {showHowToUse && <HowToUseModal onClose={() => setShowHowToUse(false)} />}
     </div>
   );
 }
