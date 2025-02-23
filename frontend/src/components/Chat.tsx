@@ -274,7 +274,9 @@ export function Chat({
           <button
             onClick={async () => {
               try {
+                setIsChatOpen(false)
                 await generateDataModel();
+
               } catch (error) {
                 console.error("Error generating data model:", error);
                 setMessages((prevMessages) => [
