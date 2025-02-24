@@ -45,7 +45,7 @@ export function AIDataModelVisualizer() {
         >
           <div
             className={`bg-white shadow-lg overflow-y-auto ${
-              isChatOpen ? "w-screen h-screen" : "w-full h-full rounded-lg"
+              isChatOpen ? "w-screen h-[100%]" : "w-full h-full rounded-lg"
             }`}
           >
             <Chat
@@ -64,7 +64,7 @@ export function AIDataModelVisualizer() {
         </div>
 
         {/* FlowChart Full Width on Mobile, Shrunk on Desktop */}
-        <div className="w-full md:flex-grow min-h-[300px] sm:min-h-0">
+        <div className="w-full h-[90%] md:h-[100%] md:flex-grow min-h-[300px] sm:min-h-0">
           <FlowChart
             nodes={nodes}
             edges={edges}

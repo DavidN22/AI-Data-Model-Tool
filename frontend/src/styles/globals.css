@@ -5,9 +5,11 @@
 @layer base {
   html, body, #root {
     @apply h-screen w-screen m-0 p-0 overflow-hidden;
+    height: 100%;
   }
 
   body {
     @apply bg-gray-100;
+
   }
 }
