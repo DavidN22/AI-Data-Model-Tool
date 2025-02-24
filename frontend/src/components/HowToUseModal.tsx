@@ -28,19 +28,6 @@ export const HowToUseModal = ({ onClose }: { onClose: () => void }) => {
             will show the SQL string of the table.
           </li>
         </ol>
-        <p className="mt-6 text-gray-600 text-sm">
-          If you want full control over the project, visit this{" "}
-          <a
-            href="https://github.com/DavidN22/AI-Data-Model-Tool"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 font-medium underline hover:text-blue-800"
-          >
-            GitHub link
-          </a>
-          , clone the repo, and follow the README on how to get started. Happy
-          building!
-        </p>
       </div>
     </Modal>
   );
