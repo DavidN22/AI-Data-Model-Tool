@@ -273,6 +273,13 @@ export function Chat({
         <div className="p-4 bg-gray-50 border-t border-gray-200">
           <button
             onClick={async () => {
+
+              if (messages.length === 0 ) {
+
+                alert("Please start a conversation with the AI first. \nExample: 'Create a simple to-do list data model'");
+                return;
+              }
+
               try {
                 setIsChatOpen(false)
                 await generateDataModel();
