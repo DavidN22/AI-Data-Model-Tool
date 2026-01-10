@@ -62,93 +62,110 @@ export function SchemaEditor({ onSubmit, manualNodes, mergeDataModel, loading }:
   }, [columns]);
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto p-4 space-y-6">
+    <div className="flex flex-col h-full space-y-4">
+      {/* Table Name Input */}
       <div className="space-y-2">
-        <label htmlFor="tableName" className="block font-medium text-gray-700">
-          Table Name:
+        <label htmlFor="tableName" className="block text-sm font-medium text-foreground">
+          Table Name
         </label>
         <input
           id="tableName"
           type="text"
           value={tableName}
           onChange={(e) => setTableName(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter table name"
+          className="input w-full"
+          placeholder="users"
         />
       </div>
 
-      <div
-        className="space-y-4 flex-grow overflow-y-auto border border-gray-200 p-2 rounded"
-        ref={columnsContainerRef}
-      >
-        <h3 className="font-medium text-gray-700 flex items-center justify-between">
-          Columns
+      {/* Columns Section */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex items-center justify-between mb-3">
+          <label className="text-sm font-medium text-foreground">
+            Columns
+          </label>
           <button
             onClick={handleAddColumn}
-            className="text-lg font-bold text-white bg-green-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-green-600 focus:ring-2 focus:ring-green-500"
+            className="btn btn-secondary h-8 px-3 text-sm"
           >
-            +
+            <span className="text-lg leading-none mr-1">+</span> Add Column
           </button>
-        </h3>
-        {columns.map((column) => (
-          <div
-            key={column.id}
-            className="flex items-center space-x-1 border-b border-gray-200 pb-2"
-          >
-            <input
-              type="text"
-              value={column.name}
-              onChange={(e) =>
-                handleColumnChange(column.id, 'name', e.target.value)
-              }
-              placeholder="Column Name"
-              className="w-1/2 px-1 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <select
-              value={column.type}
-              onChange={(e) =>
-                handleColumnChange(column.id, 'type', e.target.value)
-              }
-              className="w-1/3 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              style={{ minWidth: '130px' }}
-            >
-              <option value="UUID">UUID</option>
-              <option value="VARCHAR">VARCHAR</option>
-              <option value="INTEGER">INTEGER</option>
-              <option value="DECIMAL">DECIMAL</option>
-              <option value="TEXT">TEXT</option>
-              <option value="BOOLEAN">BOOLEAN</option>
-              <option value="TIMESTAMP">TIMESTAMP</option>
-            </select>
-            <button
-              onClick={() => handleDeleteColumn(column.id)}
-              className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600 focus:ring-2 focus:ring-red-500"
-            >
-              Delete
-            </button>
-          </div>
-        ))}
+        </div>
+        
+        <div
+          className="flex-1 overflow-y-auto space-y-2 border rounded-lg p-3 bg-muted/30"
+          ref={columnsContainerRef}
+        >
+          {columns.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              No columns yet. Click "Add Column" to get started.
+            </div>
+          ) : (
+            columns.map((column) => (
+              <div
+                key={column.id}
+                className="flex items-center gap-2 p-3 bg-white rounded-md border shadow-sm hover:shadow-md transition-shadow"
+              >
+                <input
+                  type="text"
+                  value={column.name}
+                  onChange={(e) =>
+                    handleColumnChange(column.id, 'name', e.target.value)
+                  }
+                  placeholder="column_name"
+                  className="input flex-1 h-9 text-sm"
+                />
+                <select
+                  value={column.type}
+                  onChange={(e) =>
+                    handleColumnChange(column.id, 'type', e.target.value)
+                  }
+                  className="h-9 px-3 text-sm rounded-md border bg-background hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring w-32"
+                >
+                  <option value="UUID">UUID</option>
+                  <option value="VARCHAR">VARCHAR</option>
+                  <option value="INTEGER">INTEGER</option>
+                  <option value="DECIMAL">DECIMAL</option>
+                  <option value="TEXT">TEXT</option>
+                  <option value="BOOLEAN">BOOLEAN</option>
+                  <option value="TIMESTAMP">TIMESTAMP</option>
+                </select>
+                <button
+                  onClick={() => handleDeleteColumn(column.id)}
+                  className="btn btn-ghost h-9 px-3 text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  ✕
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
-      <button
-  onClick={handleSubmit}
-  className={`w-full px-4 py-2 text-white rounded focus:outline-none focus:ring-2 ${
-    loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500'
-  }`}
-  disabled={loading}
->
-  {'Submit '}
-</button>
 
-<button
-  onClick={handleMergeWithAI}
-  className={`w-full px-4 py-2 text-white rounded focus:outline-none focus:ring-2 ${
-    loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-500 hover:bg-purple-600 focus:ring-purple-500'
-  }`}
-  disabled={loading}
->
-  {loading ? 'Merging...' : 'Merge with current AI model (beta)'}
-</button>
+      {/* Action Buttons */}
+      <div className="space-y-2 pt-2 border-t">
+        <button
+          onClick={handleSubmit}
+          className={`btn w-full h-10 ${
+            loading ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'btn-primary'
+          }`}
+          disabled={loading}
+        >
+          {loading ? '⏳ Adding...' : '➕ Add Table'}
+        </button>
 
+        <button
+          onClick={handleMergeWithAI}
+          className={`btn w-full h-10 ${
+            loading 
+              ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+              : 'bg-purple-600 text-white hover:bg-purple-700'
+          }`}
+          disabled={loading}
+        >
+          {loading ? '⏳ Merging...' : '🔗 Merge with AI Model (beta)'}
+        </button>
+      </div>
     </div>
   );
 }

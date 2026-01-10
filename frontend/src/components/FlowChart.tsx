@@ -138,9 +138,12 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
         position: 'relative',
         height: '100%',
         width: '100%',
-        border: '1px solid #ddd',
-        borderRadius: 2,
-        backgroundColor: '#f9f9f9',
+        borderRadius: '0.5rem',
+        overflow: 'hidden',
+        backgroundColor: '#fafafa',
+        border: '1px solid',
+        borderColor: 'hsl(220 13% 91%)',
+        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
       }}
     >
       {loading && (
@@ -154,15 +157,16 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(4px)',
             zIndex: 10,
           }}
         >
-          <CircularProgress />
+          <CircularProgress sx={{ color: 'hsl(220.9 39.3% 11%)' }} />
         </Box>
       )}
 
-      {isLayoutReady && ( // Render ReactFlow only when the layout is ready
+      {isLayoutReady && (
         <ReactFlow
           nodes={localNodes}
           edges={localEdges}
@@ -174,8 +178,20 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
           fitView
           nodeTypes={nodeTypes}
         >
-          <Background color="#aaa" gap={16} />
-          <Controls />
+          <Background 
+            color="hsl(220 13% 91%)" 
+            gap={16}
+            style={{ opacity: 0.5 }}
+          />
+          <Controls 
+            style={{
+              button: {
+                backgroundColor: 'white',
+                border: '1px solid hsl(220 13% 91%)',
+                borderRadius: '0.375rem',
+              }
+            }}
+          />
         </ReactFlow>
       )}
 
@@ -183,8 +199,25 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
         anchorEl={menuAnchor}
         open={Boolean(menuAnchor)}
         onClose={handleMenuClose}
+        PaperProps={{
+          sx: {
+            borderRadius: '0.5rem',
+            border: '1px solid hsl(220 13% 91%)',
+            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+          }
+        }}
       >
-        <MenuItem onClick={handleDelete}>Delete</MenuItem>
+        <MenuItem 
+          onClick={handleDelete}
+          sx={{
+            color: '#dc2626',
+            '&:hover': {
+              backgroundColor: '#fef2f2',
+            }
+          }}
+        >
+          Delete
+        </MenuItem>
       </Menu>
 
       <Modal open={isModalOpen} onClose={handleModalClose}>
@@ -196,25 +229,50 @@ export function FlowChart({ nodes, edges, loading, setManualNodes }: FlowChartPr
             transform: 'translate(-50%, -50%)',
             p: 4,
             backgroundColor: 'white',
-            borderRadius: 1,
-            boxShadow: 24,
-            width: '300px',
+            borderRadius: '0.5rem',
+            border: '1px solid hsl(220 13% 91%)',
+            boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+            width: '320px',
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
           }}
         >
-          <h3>Name your edge</h3>
+          <h3 style={{ 
+            margin: 0, 
+            fontSize: '1.125rem', 
+            fontWeight: 600,
+            color: 'hsl(224 71.4% 4.1%)'
+          }}>
+            Name Your Edge
+          </h3>
           <TextField
-            label="Edge Name"
+            label="Relationship Name"
             value={edgeLabel}
             onChange={(e) => setEdgeLabel(e.target.value)}
+            size="small"
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '0.375rem',
+              }
+            }}
           />
           <Button
             variant="contained"
-            color="primary"
             onClick={handleAddEdge}
             disabled={!edgeLabel.trim()}
+            sx={{
+              backgroundColor: 'hsl(220.9 39.3% 11%)',
+              borderRadius: '0.375rem',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: 'hsl(220.9 39.3% 18%)',
+              },
+              '&:disabled': {
+                backgroundColor: 'hsl(220 14.3% 95.9%)',
+              }
+            }}
           >
             Add Edge
           </Button>

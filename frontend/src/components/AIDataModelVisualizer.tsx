@@ -21,31 +21,34 @@ export function AIDataModelVisualizer() {
   } = useDataModelServices();
 
   return (
-    <div className="h-screen w-full p-4 bg-gray-100 flex flex-col relative">
-      <h1 className="text-2xl font-bold mb-4 text-center sm:text-left">
-        SchemaQL
-      </h1>
-
-      {/* Chat Modal Button - Visible only on Mobile */}
+    <div className="h-screen w-full bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col relative">
+      {/* Mobile Chat Toggle Button */}
       <button
         onClick={() => setIsChatOpen(!isChatOpen)}
-        className="md:hidden fixed top-4 left-4 mt-14 ml-4 px-5 py-3 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:ring-blue-500 z-50"
+        className="md:hidden fixed top-4 right-4 z-50 w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all flex items-center justify-center"
       >
-        Open Chat
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
       </button>
 
-      <div className="flex-grow flex gap-4">
-        {/* Chat Panel - Dynamically Positioned */}
+      <div className="flex-1 flex gap-4 p-4 overflow-hidden">
+        {/* Chat Panel - Responsive */}
         <div
           className={`transition-all ${
             isChatOpen
-              ? "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-              : "hidden md:flex w-[70%] max-w-5xl h-full"
+              ? "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-40 p-4"
+              : "hidden md:flex md:w-[420px] md:flex-shrink-0"
           }`}
+          onClick={(e) => {
+            if (isChatOpen && e.target === e.currentTarget) {
+              setIsChatOpen(false);
+            }
+          }}
         >
           <div
-            className={`bg-white shadow-lg overflow-y-auto ${
-              isChatOpen ? "w-screen h-[100%]" : "w-full h-full rounded-lg"
+            className={`bg-white shadow-lg overflow-hidden ${
+              isChatOpen ? "w-full max-w-md h-[90vh] rounded-2xl" : "w-full h-full card"
             }`}
           >
             <Chat
@@ -63,8 +66,8 @@ export function AIDataModelVisualizer() {
           </div>
         </div>
 
-        {/* FlowChart Full Width on Mobile, Shrunk on Desktop */}
-        <div className="w-full h-[90%] md:h-[100%] md:flex-grow min-h-[300px] sm:min-h-0">
+        {/* FlowChart - Full Width */}
+        <div className="flex-1 min-w-0">
           <FlowChart
             nodes={nodes}
             edges={edges}
