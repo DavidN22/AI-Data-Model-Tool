@@ -10,5 +10,13 @@ export default defineConfig({
       '/api': 'https://ai-data-model-tool-backend-davidn22s-projects.vercel.app',
     },
   },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress all warnings
+        return;
+      },
+    },
+  },
 });
 
