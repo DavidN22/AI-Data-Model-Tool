@@ -5,9 +5,9 @@ import { schemaAI } from "../schemaAI.js";
 
 const router = express.Router();
 const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
 const modelJson = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
+  model: "gemini-3.6-flash",
   generationConfig: {
     responseMimeType: "application/json",
     responseSchema: schemaAI.schemaOne,
@@ -18,7 +18,9 @@ router.post("/", async (req, res) => {
   const { message, chatHistory } = req.body;
 
   if (!message || !Array.isArray(chatHistory)) {
-    return res.status(400).json({ error: "Message and chat history are required" });
+    return res
+      .status(400)
+      .json({ error: "Message and chat history are required" });
   }
 
   try {
@@ -121,7 +123,9 @@ router.post("/merge", async (req, res) => {
   const { message, chatHistory } = req.body;
 
   if (!message || !chatHistory) {
-    return res.status(400).json({ error: "Message and chat history are required" });
+    return res
+      .status(400)
+      .json({ error: "Message and chat history are required" });
   }
 
   try {
@@ -154,7 +158,7 @@ router.post("/merge", async (req, res) => {
       Chat History (!IMPORTANT! - Last messages being the most recent):
       ${chatHistory.map((entry) => `${entry.role}: ${entry.content}`).join("\n")}
     `;
-console.log(prompt);
+    console.log(prompt);
     const result = await model.generateContent(prompt);
     const aiResponse = await result.response.text();
 

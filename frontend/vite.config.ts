@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -7,16 +7,15 @@ export default defineConfig({
   server: {
     port: 8000,
     proxy: {
-      '/api': 'https://ai-data-model-tool-backend-davidn22s-projects.vercel.app',
+      "/api": "http://localhost:3000",
     },
   },
   build: {
     rollupOptions: {
-      onwarn(warning, warn) {
+      onwarn() {
         // Suppress all warnings
         return;
       },
     },
   },
 });
-
